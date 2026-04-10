@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayman El-Toufaili</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#f5f4f2;color:#1a1a1a;line-height:1.6}
+.header{background:#fff;border-bottom:1px solid #e8e6e2;padding:40px 0 28px;position:relative}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#c0392b}
+.header-inner{max-width:880px;margin:0 auto;padding:0 28px}
+h1{font-size:2.5rem;font-weight:700;margin-bottom:12px}
+.meta{font-size:0.85rem;color:#555;margin-bottom:6px}
+.meta a{color:#c0392b;text-decoration:none}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.badge{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:3px 10px;border-radius:20px}
+.badge.red{background:#c0392b;color:#fff;border-color:#c0392b}
+main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
+.card{background:#fff;border:1px solid #e8e6e2;border-radius:12px;padding:24px}
+.card-title{font-size:1.1rem;font-weight:700;color:#c0392b;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #e8e6e2}
+.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
+.status-item{background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:14px 16px;position:relative;overflow:hidden}
+.status-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#c0392b}
+.status-label{font-size:0.72rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.status-value{font-size:1.15rem;font-weight:600;color:#1a1a1a}
+.status-value.green{color:#27ae60}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;color:#27ae60;font-weight:600;margin-bottom:14px}
+.live-dot::before{content:'';width:6px;height:6px;background:#27ae60;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.status-note{font-size:0.78rem;color:#888;font-style:italic;margin-top:10px}
+.project-desc{font-size:0.88rem;color:#555;line-height:1.75;margin-bottom:16px}
+.project-details{margin-bottom:16px;padding-left:0;list-style:none}
+.project-details li{font-size:0.85rem;color:#555;padding:3px 0;display:flex;align-items:flex-start;gap:8px}
+.project-details li::before{content:'';width:5px;height:5px;background:#c0392b;border-radius:50%;flex-shrink:0;margin-top:7px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:4px 10px;border-radius:6px;font-family:monospace}
+.coming-soon{background:#f5f4f2;border:1px dashed #ccc;border-radius:12px;padding:24px;text-align:center;color:#888;font-size:0.85rem}
+footer{text-align:center;padding:24px;font-size:0.77rem;color:#888}
+footer span{color:#c0392b}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-inner">
+    <h1>Ayman El-Toufaili</h1>
+    <div class="meta"><a href="mailto:toufaili.ayman@gmail.com">toufaili.ayman@gmail.com</a> &nbsp;·&nbsp; +49 152 06027278 &nbsp;·&nbsp; Marl, NRW</div>
+    <div class="meta">Deutsch – Muttersprache &nbsp;|&nbsp; Englisch – Verhandlungssicher</div>
+    <div class="badges">
+      <span class="badge red">Praktikum ab Sep. 2026</span>
+      <span class="badge">Helpdesk &amp; Support</span>
+      <span class="badge">Netzwerktechnik</span>
+      <span class="badge">Systemadministration</span>
+    </div>
+  </div>
+</div>
+<main>
+  <div class="card">
+    <div class="card-title">Server Status</div>
+    <div class="live-dot">Live – Raspberry Pi 4, Marl</div>
+    <div class="status-grid">
+      <div class="status-item"><div class="status-label">Uptime</div><div class="status-value green" id="uptime">–</div></div>
+      <div class="status-item"><div class="status-label">CPU Temp</div><div class="status-value" id="temp">–</div></div>
+      <div class="status-item"><div class="status-label">CPU Load</div><div class="status-value" id="cpu">–</div></div>
+      <div class="status-item"><div class="status-label">RAM</div><div class="status-value" id="ram">–</div></div>
+      <div class="status-item"><div class="status-label">Webserver</div><div class="status-value green">nginx ✓</div></div>
+    </div>
+    <p class="status-note">* Live-Daten direkt vom Raspberry Pi. Diese Seite läuft auf eigenem Hardware-Server zuhause.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Projekt 1 – Raspberry Pi Heimserver</div>
+    <p class="project-desc">Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux (Raspberry Pi OS). Der Server ist öffentlich erreichbar über DuckDNS mit Portweiterleitung über eine Fritz!Box 7560.</p>
+    <ul class="project-details">
+      <li>nginx als Webserver installiert und konfiguriert</li>
+      <li>Python REST-API entwickelt – liefert Live-Systemdaten (CPU, RAM, Temperatur)</li>
+      <li>nginx als Reverse Proxy eingerichtet – API über /api/status erreichbar</li>
+      <li>DuckDNS eingerichtet mit automatischem IP-Update via Cronjob alle 5 Minuten</li>
+      <li>Portweiterleitung (Port 80) in der Fritz!Box konfiguriert</li>
+      <li>Alle Dienste als systemd-Services eingerichtet – starten automatisch nach Neustart</li>
+    </ul>
+    <div class="tags">
+      <span class="tag">Raspberry Pi 4</span>
+      <span class="tag">Linux</span>
+      <span class="tag">nginx</span>
+      <span class="tag">Python</span>
+      <span class="tag">Bash</span>
+      <span class="tag">systemd</span>
+      <span class="tag">DuckDNS</span>
+      <span class="tag">SSH</span>
+      <span class="tag">Fritz!Box</span>
+      <span class="tag">REST API</span>
+    </div>
+  </div>
+  <div class="coming-soon">Weitere Projekte folgen ...</div>
+</main>
+<footer>Gehostet auf eigenem Raspberry Pi · Marl, NRW · <span>Ayman El-Toufaili</span></footer>
+<script>
+async function loadStatus() {
+  try {
+    const res = await fetch("/api/status");
+    const data = await res.json();
+    document.getElementById("temp").textContent = data.temp + " °C";
+    document.getElementById("cpu").textContent = data.cpu_load;
+    document.getElementById("ram").textContent = data.ram_used + " / " + data.ram_total + " MB";
+  } catch {
+    document.getElementById("temp").textContent = "API offline";
+    document.getElementById("cpu").textContent = "–";
+    document.getElementById("ram").textContent = "–";
+  }
+  try {
+    const up = await fetch("/api/uptime");
+    const u = await up.json();
+    document.getElementById("uptime").textContent = u.uptime;
+  } catch {
+    document.getElementById("uptime").textContent = "–";
+  }
+}
+setInterval(loadStatus, 2000);
+loadStatus();
+</script>
+</body>
+</html>
