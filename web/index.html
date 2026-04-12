@@ -8,20 +8,19 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:sans-serif;background:#f5f4f2;color:#1a1a1a;line-height:1.6}
 .header{background:#fff;border-bottom:1px solid #e8e6e2;padding:40px 0 28px;position:relative}
-.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#c0392b}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#2d7d7d}
 .header-inner{max-width:880px;margin:0 auto;padding:0 28px}
 h1{font-size:2.5rem;font-weight:700;margin-bottom:12px}
 .meta{font-size:0.85rem;color:#555;margin-bottom:6px}
-.meta a{color:#c0392b;text-decoration:none}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .badge{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:3px 10px;border-radius:20px}
-.badge.red{background:#c0392b;color:#fff;border-color:#c0392b}
+.badge.teal{background:#2d7d7d;color:#fff;border-color:#2d7d7d}
 main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 .card{background:#fff;border:1px solid #e8e6e2;border-radius:12px;padding:24px}
-.card-title{font-size:1.1rem;font-weight:700;color:#c0392b;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #e8e6e2}
-.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
+.card-title{font-size:1.1rem;font-weight:700;color:#2d7d7d;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #e8e6e2}
+.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:14px}
 .status-item{background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:14px 16px;position:relative;overflow:hidden}
-.status-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#c0392b}
+.status-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#2d7d7d}
 .status-label{font-size:0.72rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
 .status-value{font-size:1.15rem;font-weight:600;color:#1a1a1a}
 .status-value.green{color:#27ae60}
@@ -32,22 +31,30 @@ main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 .project-desc{font-size:0.88rem;color:#555;line-height:1.75;margin-bottom:16px}
 .project-details{margin-bottom:16px;padding-left:0;list-style:none}
 .project-details li{font-size:0.85rem;color:#555;padding:3px 0;display:flex;align-items:flex-start;gap:8px}
-.project-details li::before{content:'';width:5px;height:5px;background:#c0392b;border-radius:50%;flex-shrink:0;margin-top:7px}
+.project-details li::before{content:'';width:5px;height:5px;background:#2d7d7d;border-radius:50%;flex-shrink:0;margin-top:7px}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
 .tag{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:4px 10px;border-radius:6px;font-family:monospace}
 .coming-soon{background:#f5f4f2;border:1px dashed #ccc;border-radius:12px;padding:24px;text-align:center;color:#888;font-size:0.85rem}
+.chat-bubble-user{align-self:flex-end;background:#2d7d7d;color:white;padding:8px 14px;border-radius:12px 12px 2px 12px;font-size:0.85rem;max-width:80%}
+.chat-bubble-bot{align-self:flex-start;background:#fff;border:1px solid #e8e6e2;padding:8px 14px;border-radius:12px 12px 12px 2px;font-size:0.85rem;max-width:80%;color:#1a1a1a;line-height:1.6}
 footer{text-align:center;padding:24px;font-size:0.77rem;color:#888}
-footer span{color:#c0392b}
+footer span{color:#2d7d7d}
+@media(max-width:600px){
+  h1{font-size:1.8rem}
+  .header-inner{padding:0 16px}
+  main{padding:0 16px}
+  .card{padding:16px}
+  .status-grid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
 <div class="header">
   <div class="header-inner">
     <h1>Ayman El-Toufaili</h1>
-    <div class="meta"><a href="mailto:toufaili.ayman@gmail.com">toufaili.ayman@gmail.com</a> &nbsp;·&nbsp; +49 152 06027278 &nbsp;·&nbsp; Marl, NRW</div>
-    <div class="meta">Deutsch – Muttersprache &nbsp;|&nbsp; Englisch – Verhandlungssicher</div>
+    <div class="meta">Marl, NRW &nbsp;·&nbsp; Deutsch – Muttersprache &nbsp;|&nbsp; Englisch – Verhandlungssicher</div>
     <div class="badges">
-      <span class="badge red">Praktikum ab Sep. 2026</span>
+      <span class="badge teal">Praktikum ab Sep. 2026</span>
       <span class="badge">Helpdesk &amp; Support</span>
       <span class="badge">Netzwerktechnik</span>
       <span class="badge">Systemadministration</span>
@@ -77,6 +84,8 @@ footer span{color:#c0392b}
       <li>DuckDNS eingerichtet mit automatischem IP-Update via Cronjob alle 5 Minuten</li>
       <li>Portweiterleitung (Port 80) in der Fritz!Box konfiguriert</li>
       <li>Alle Dienste als systemd-Services eingerichtet – starten automatisch nach Neustart</li>
+      <li>Firewall (UFW) und Fail2ban für SSH-Schutz eingerichtet</li>
+      <li>SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv</li>
     </ul>
     <div class="tags">
       <span class="tag">Raspberry Pi 4</span>
@@ -89,6 +98,39 @@ footer span{color:#c0392b}
       <span class="tag">SSH</span>
       <span class="tag">Fritz!Box</span>
       <span class="tag">REST API</span>
+      <span class="tag">UFW</span>
+      <span class="tag">Fail2ban</span>
+      <span class="tag">Let's Encrypt</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Projekt 2 – IT-Helpdesk Bot</div>
+    <p class="project-desc">KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3).</p>
+    <ul class="project-details">
+      <li>Python Backend entwickelt – verarbeitet Anfragen und kommuniziert mit Groq API</li>
+      <li>LLaMA 3 Modell via Groq API integriert – antwortet auf IT-Fragen auf Deutsch</li>
+      <li>REST API Endpunkt /api/chat erstellt</li>
+      <li>nginx Reverse Proxy für den Bot konfiguriert</li>
+      <li>Als systemd-Service eingerichtet – startet automatisch</li>
+      <li>Frontend Chat-Interface in HTML/JavaScript entwickelt</li>
+    </ul>
+    <div class="tags">
+      <span class="tag">Python</span>
+      <span class="tag">Groq API</span>
+      <span class="tag">LLaMA 3</span>
+      <span class="tag">REST API</span>
+      <span class="tag">JavaScript</span>
+      <span class="tag">nginx</span>
+      <span class="tag">systemd</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">IT-Helpdesk Bot – Ausprobieren</div>
+    <p style="font-size:0.85rem;color:#555;margin-bottom:16px;">Hast du ein IT-Problem? Frag einfach!</p>
+    <div id="chat-messages" style="height:260px;overflow-y:auto;background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <input id="chat-input" type="text" placeholder="z.B. Mein WLAN funktioniert nicht..." style="flex:1;padding:10px 14px;border:1px solid #e8e6e2;border-radius:8px;background:#fff;color:#1a1a1a;font-size:0.88rem;">
+      <button onclick="sendMessage()" style="padding:10px 20px;background:#2d7d7d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:600;">Senden</button>
     </div>
   </div>
   <div class="coming-soon">Weitere Projekte folgen ...</div>
@@ -117,6 +159,39 @@ async function loadStatus() {
 }
 setInterval(loadStatus, 2000);
 loadStatus();
+
+async function sendMessage() {
+  const input = document.getElementById("chat-input");
+  const messages = document.getElementById("chat-messages");
+  const text = input.value.trim();
+  if (!text) return;
+  messages.innerHTML += `<div class="chat-bubble-user">${text}</div>`;
+  input.value = "";
+  messages.scrollTop = messages.scrollHeight;
+  messages.innerHTML += `<div class="chat-bubble-bot" id="typing">...</div>`;
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({message: text})
+    });
+    const data = await res.json();
+    const formatted = data.reply
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n(\d+\.)/g, '<br><br>$1')
+      .replace(/\n[-*] /g, '<br>• ')
+      .replace(/\n/g, '<br>');
+    document.getElementById("typing").outerHTML = `<div class="chat-bubble-bot">${formatted}</div>`;
+  } catch {
+    document.getElementById("typing").outerHTML = `<div class="chat-bubble-bot">Bot offline</div>`;
+  }
+  messages.scrollTop = messages.scrollHeight;
+}
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("chat-input").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+  });
+});
 </script>
 </body>
 </html>
