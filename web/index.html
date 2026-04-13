@@ -12,23 +12,34 @@ body{font-family:sans-serif;background:#f5f4f2;color:#1a1a1a;line-height:1.6}
 .header-inner{max-width:880px;margin:0 auto;padding:0 28px}
 h1{font-size:2.5rem;font-weight:700;margin-bottom:12px}
 .meta{font-size:0.85rem;color:#555;margin-bottom:6px}
+.meta a{color:#2d7d7d;text-decoration:none}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .badge{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:3px 10px;border-radius:20px}
 .badge.teal{background:#2d7d7d;color:#fff;border-color:#2d7d7d}
 main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 .card{background:#fff;border:1px solid #e8e6e2;border-radius:12px;padding:24px}
 .card-title{font-size:1.1rem;font-weight:700;color:#2d7d7d;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #e8e6e2}
-.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:14px}
-.status-item{background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:14px 16px;position:relative;overflow:hidden}
+.card-subtitle{font-size:0.78rem;font-weight:700;color:#2d7d7d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;margin-top:16px}
+.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:4px}
+.status-item{background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:10px 12px;position:relative;overflow:hidden}
 .status-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#2d7d7d}
-.status-label{font-size:0.72rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
-.status-value{font-size:1.15rem;font-weight:600;color:#1a1a1a}
+.energy-item::before{background:#27ae60!important}
+.status-label{font-size:0.68rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
+.status-value{font-size:0.95rem;font-weight:600;color:#1a1a1a}
 .status-value.green{color:#27ae60}
-.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;color:#27ae60;font-weight:600;margin-bottom:14px}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;color:#27ae60;font-weight:600;margin-bottom:10px}
 .live-dot::before{content:'';width:6px;height:6px;background:#27ae60;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 .status-note{font-size:0.78rem;color:#888;font-style:italic;margin-top:10px}
-.project-desc{font-size:0.88rem;color:#555;line-height:1.75;margin-bottom:16px}
+.divider{border:none;border-top:1px solid #e8e6e2;margin:16px 0}
+.accordion{border:1px solid #e8e6e2;border-radius:12px;overflow:hidden;background:#fff}
+.accordion-header{padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#2d7d7d;font-size:1rem;user-select:none;background:#fff}
+.accordion-header:hover{background:#f5f4f2}
+.accordion-arrow{font-size:0.85rem;color:#888;transition:transform 0.2s}
+.accordion-arrow.open{transform:rotate(180deg)}
+.accordion-body{display:none;padding:0 24px 24px 24px;border-top:1px solid #e8e6e2}
+.accordion-body.open{display:block}
+.project-desc{font-size:0.88rem;color:#555;line-height:1.75;margin-bottom:16px;margin-top:16px}
 .project-details{margin-bottom:16px;padding-left:0;list-style:none}
 .project-details li{font-size:0.85rem;color:#555;padding:3px 0;display:flex;align-items:flex-start;gap:8px}
 .project-details li::before{content:'';width:5px;height:5px;background:#2d7d7d;border-radius:50%;flex-shrink:0;margin-top:7px}
@@ -45,6 +56,8 @@ footer span{color:#2d7d7d}
   main{padding:0 16px}
   .card{padding:16px}
   .status-grid{grid-template-columns:1fr 1fr}
+  .accordion-header{padding:14px 16px}
+  .accordion-body{padding:0 16px 16px 16px}
 }
 </style>
 </head>
@@ -52,7 +65,7 @@ footer span{color:#2d7d7d}
 <div class="header">
   <div class="header-inner">
     <h1>Ayman El-Toufaili</h1>
-    <div class="meta">Marl, NRW &nbsp;·&nbsp; Deutsch – Muttersprache &nbsp;|&nbsp; Englisch – Verhandlungssicher &nbsp;·&nbsp; <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank" style="color:#2d7d7d;text-decoration:none;">GitHub</a></div>
+    <div class="meta">Marl, NRW &nbsp;·&nbsp; Deutsch – Muttersprache &nbsp;|&nbsp; Englisch – Verhandlungssicher &nbsp;·&nbsp; <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank">GitHub</a></div>
     <div class="badges">
       <span class="badge teal">Praktikum ab Sep. 2026</span>
       <span class="badge">Helpdesk &amp; Support</span>
@@ -62,9 +75,11 @@ footer span{color:#2d7d7d}
   </div>
 </div>
 <main>
+
   <div class="card">
-    <div class="card-title">Server Status</div>
+    <div class="card-title">Live Monitor</div>
     <div class="live-dot">Live – Raspberry Pi 4, Marl</div>
+    <div class="card-subtitle">Server Status</div>
     <div class="status-grid">
       <div class="status-item"><div class="status-label">Uptime</div><div class="status-value green" id="uptime">–</div></div>
       <div class="status-item"><div class="status-label">CPU Temp</div><div class="status-value" id="temp">–</div></div>
@@ -72,58 +87,102 @@ footer span{color:#2d7d7d}
       <div class="status-item"><div class="status-label">RAM</div><div class="status-value" id="ram">–</div></div>
       <div class="status-item"><div class="status-label">Webserver</div><div class="status-value green">nginx ✓</div></div>
     </div>
-    <p class="status-note">* Live-Daten direkt vom Raspberry Pi. Diese Seite läuft auf eigenem Hardware-Server zuhause.</p>
+    <hr class="divider">
+    <div class="card-subtitle">Energie & Kosten</div>
+    <div class="status-grid">
+      <div class="status-item energy-item"><div class="status-label">Verbrauch</div><div class="status-value" id="watt">–</div></div>
+      <div class="status-item energy-item"><div class="status-label">Kosten / Tag</div><div class="status-value" id="cost_day">–</div></div>
+      <div class="status-item energy-item"><div class="status-label">Kosten / Monat</div><div class="status-value" id="cost_month">–</div></div>
+      <div class="status-item energy-item"><div class="status-label">CO₂ / Tag</div><div class="status-value" id="co2">–</div></div>
+    </div>
+    <p class="status-note">* Geschätzter Verbrauch basierend auf CPU Last. Strompreis: 0,30 €/kWh.</p>
   </div>
-  <div class="card">
-    <div class="card-title">Projekt 1 – Raspberry Pi Heimserver</div>
-    <p class="project-desc">Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux (Raspberry Pi OS). Der Server ist öffentlich erreichbar über DuckDNS mit Portweiterleitung über eine Fritz!Box 7560.</p>
-    <ul class="project-details">
-      <li>nginx als Webserver installiert und konfiguriert</li>
-      <li>Python REST-API entwickelt – liefert Live-Systemdaten (CPU, RAM, Temperatur)</li>
-      <li>nginx als Reverse Proxy eingerichtet – API über /api/status erreichbar</li>
-      <li>DuckDNS eingerichtet mit automatischem IP-Update via Cronjob alle 5 Minuten</li>
-      <li>Portweiterleitung (Port 80) in der Fritz!Box konfiguriert</li>
-      <li>Alle Dienste als systemd-Services eingerichtet – starten automatisch nach Neustart</li>
-      <li>Firewall (UFW) und Fail2ban für SSH-Schutz eingerichtet</li>
-      <li>SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv</li>
-    </ul>
-    <div class="tags">
-      <span class="tag">Raspberry Pi 4</span>
-      <span class="tag">Linux</span>
-      <span class="tag">nginx</span>
-      <span class="tag">Python</span>
-      <span class="tag">Bash</span>
-      <span class="tag">systemd</span>
-      <span class="tag">DuckDNS</span>
-      <span class="tag">SSH</span>
-      <span class="tag">Fritz!Box</span>
-      <span class="tag">REST API</span>
-      <span class="tag">UFW</span>
-      <span class="tag">Fail2ban</span>
-      <span class="tag">Let's Encrypt</span>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('p1')">
+      Projekt 1 – Raspberry Pi Heimserver
+      <span class="accordion-arrow" id="arrow-p1">▼</span>
+    </div>
+    <div class="accordion-body" id="p1">
+      <p class="project-desc">Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux (Raspberry Pi OS). Der Server ist öffentlich erreichbar über DuckDNS mit Portweiterleitung über eine Fritz!Box 7560.</p>
+      <ul class="project-details">
+        <li>nginx als Webserver installiert und konfiguriert</li>
+        <li>Python REST-API entwickelt – liefert Live-Systemdaten (CPU, RAM, Temperatur)</li>
+        <li>nginx als Reverse Proxy eingerichtet – API über /api/status erreichbar</li>
+        <li>DuckDNS eingerichtet mit automatischem IP-Update via Cronjob alle 5 Minuten</li>
+        <li>Portweiterleitung (Port 80) in der Fritz!Box konfiguriert</li>
+        <li>Alle Dienste als systemd-Services eingerichtet – starten automatisch nach Neustart</li>
+        <li>Firewall (UFW) und Fail2ban für SSH-Schutz eingerichtet</li>
+        <li>SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">Raspberry Pi 4</span>
+        <span class="tag">Linux</span>
+        <span class="tag">nginx</span>
+        <span class="tag">Python</span>
+        <span class="tag">Bash</span>
+        <span class="tag">systemd</span>
+        <span class="tag">DuckDNS</span>
+        <span class="tag">SSH</span>
+        <span class="tag">Fritz!Box</span>
+        <span class="tag">REST API</span>
+        <span class="tag">UFW</span>
+        <span class="tag">Fail2ban</span>
+        <span class="tag">Let's Encrypt</span>
+      </div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-title">Projekt 2 – IT-Helpdesk Bot</div>
-    <p class="project-desc">KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3).</p>
-    <ul class="project-details">
-      <li>Python Backend entwickelt – verarbeitet Anfragen und kommuniziert mit Groq API</li>
-      <li>LLaMA 3 Modell via Groq API integriert – antwortet auf IT-Fragen auf Deutsch</li>
-      <li>REST API Endpunkt /api/chat erstellt</li>
-      <li>nginx Reverse Proxy für den Bot konfiguriert</li>
-      <li>Als systemd-Service eingerichtet – startet automatisch</li>
-      <li>Frontend Chat-Interface in HTML/JavaScript entwickelt</li>
-    </ul>
-    <div class="tags">
-      <span class="tag">Python</span>
-      <span class="tag">Groq API</span>
-      <span class="tag">LLaMA 3</span>
-      <span class="tag">REST API</span>
-      <span class="tag">JavaScript</span>
-      <span class="tag">nginx</span>
-      <span class="tag">systemd</span>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('p2')">
+      Projekt 2 – Energie-Monitoring
+      <span class="accordion-arrow" id="arrow-p2">▼</span>
+    </div>
+    <div class="accordion-body" id="p2">
+      <p class="project-desc">Live-Überwachung des Stromverbrauchs des Raspberry Pi Servers. Berechnung der geschätzten Energiekosten und CO₂-Emissionen in Echtzeit – relevant für Green IT und nachhaltige IT-Infrastruktur.</p>
+      <ul class="project-details">
+        <li>Stromverbrauch-Schätzung basierend auf CPU Last in Python implementiert</li>
+        <li>Kostenberechnung basierend auf aktuellem deutschen Strompreis (0,30 €/kWh)</li>
+        <li>CO₂-Emissionen berechnet basierend auf deutschem Strommix</li>
+        <li>REST API Endpunkt /api/power erstellt</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">REST API</span>
+        <span class="tag">Green IT</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">Energieeffizienz</span>
+      </div>
     </div>
   </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('p3')">
+      Projekt 3 – IT-Helpdesk Bot
+      <span class="accordion-arrow" id="arrow-p3">▼</span>
+    </div>
+    <div class="accordion-body" id="p3">
+      <p class="project-desc">KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3).</p>
+      <ul class="project-details">
+        <li>Python Backend entwickelt – verarbeitet Anfragen und kommuniziert mit Groq API</li>
+        <li>LLaMA 3 Modell via Groq API integriert – antwortet auf IT-Fragen auf Deutsch</li>
+        <li>REST API Endpunkt /api/chat erstellt</li>
+        <li>nginx Reverse Proxy für den Bot konfiguriert</li>
+        <li>Als systemd-Service eingerichtet – startet automatisch</li>
+        <li>Frontend Chat-Interface in HTML/JavaScript entwickelt</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">Python</span>
+        <span class="tag">Groq API</span>
+        <span class="tag">LLaMA 3</span>
+        <span class="tag">REST API</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">nginx</span>
+        <span class="tag">systemd</span>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-title">IT-Helpdesk Bot – Ausprobieren</div>
     <p style="font-size:0.85rem;color:#555;margin-bottom:16px;">Hast du ein IT-Problem? Frag einfach!</p>
@@ -133,10 +192,18 @@ footer span{color:#2d7d7d}
       <button onclick="sendMessage()" style="padding:10px 20px;background:#2d7d7d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:600;">Senden</button>
     </div>
   </div>
+
   <div class="coming-soon">Weitere Projekte folgen ...</div>
 </main>
 <footer>Gehostet auf eigenem Raspberry Pi · Marl, NRW · <span>Ayman El-Toufaili</span></footer>
 <script>
+function toggleAccordion(id) {
+  const body = document.getElementById(id);
+  const arrow = document.getElementById("arrow-" + id);
+  body.classList.toggle("open");
+  arrow.classList.toggle("open");
+}
+
 async function loadStatus() {
   try {
     const res = await fetch("/api/status");
@@ -156,7 +223,18 @@ async function loadStatus() {
   } catch {
     document.getElementById("uptime").textContent = "–";
   }
+  try {
+    const res = await fetch("/api/power");
+    const data = await res.json();
+    document.getElementById("watt").textContent = data.watt + " W";
+    document.getElementById("cost_day").textContent = data.cost_per_day + " €";
+    document.getElementById("cost_month").textContent = data.cost_per_month + " €";
+    document.getElementById("co2").textContent = data.co2_per_day + " kg";
+  } catch {
+    document.getElementById("watt").textContent = "–";
+  }
 }
+
 setInterval(loadStatus, 2000);
 loadStatus();
 
