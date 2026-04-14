@@ -1,15 +1,53 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import subprocess
+import os
+import threading
+import time
+from datetime import datetime
 
 STROMPREIS = 0.30
 IDLE_WATT = 3.0
 MAX_WATT = 8.0
+LOG_FILE = "/home/raspberrypi/Desktop/pi-dashboard/energy_log.json"
 
 def get_power():
     load = float(subprocess.check_output(["cat", "/proc/loadavg"]).decode().split()[0])
     watt = IDLE_WATT + (min(load, 4.0) / 4.0) * (MAX_WATT - IDLE_WATT)
     return round(watt, 2)
+
+def get_uptime_seconds():
+    with open("/proc/uptime") as f:
+        return float(f.read().split()[0])
+
+def load_log():
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE) as f:
+            return json.load(f)
+    return {
+        "total_wh": 0.0,
+        "total_minutes": 0,
+        "start_date": datetime.now().strftime("%d.%m.%Y")
+    }
+
+def save_log(data):
+    with open(LOG_FILE, "w") as f:
+        json.dump(data, f)
+
+def energy_tracker():
+    while True:
+        time.sleep(60)
+        try:
+            watt = get_power()
+            log = load_log()
+            log["total_wh"] += watt / 60
+            log["total_minutes"] += 1
+            save_log(log)
+        except:
+            pass
+
+tracker = threading.Thread(target=energy_tracker, daemon=True)
+tracker.start()
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -44,8 +82,7 @@ class Handler(BaseHTTPRequestHandler):
 
         elif self.path == "/api/uptime":
             try:
-                with open("/proc/uptime") as f:
-                    seconds = int(float(f.read().split()[0]))
+                seconds = int(get_uptime_seconds())
                 days = seconds // 86400
                 hours = (seconds % 86400) // 3600
                 minutes = (seconds % 3600) // 60
@@ -73,6 +110,33 @@ class Handler(BaseHTTPRequestHandler):
                     "cost_per_day": cost_per_day,
                     "cost_per_month": cost_per_month,
                     "co2_per_day": co2_per_day
+                }
+                self.send_response(200)
+                self.send_header("Content-type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps(data).encode())
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(e).encode())
+
+        elif self.path == "/api/energy_total":
+            try:
+                log = load_log()
+                total_kwh = round(log["total_wh"] / 1000, 4)
+                total_cost = round(total_kwh * STROMPREIS, 4)
+                total_co2 = round(total_kwh * 0.4, 4)
+                seconds = int(get_uptime_seconds())
+                days = seconds // 86400
+                hours = (seconds % 86400) // 3600
+                minutes = (seconds % 3600) // 60
+                runtime = f"{days:02d}:{hours:02d}:{minutes:02d}"
+                data = {
+                    "runtime": runtime,
+                    "total_kwh": total_kwh,
+                    "total_cost": total_cost,
+                    "total_co2": total_co2,
+                    "start_date": log["start_date"]
                 }
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")

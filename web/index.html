@@ -24,6 +24,7 @@ main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 .status-item{background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:10px 12px;position:relative;overflow:hidden}
 .status-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#2d7d7d}
 .energy-item::before{background:#27ae60!important}
+.total-item::before{background:#8e44ad!important}
 .status-label{font-size:0.68rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
 .status-value{font-size:0.95rem;font-weight:600;color:#1a1a1a}
 .status-value.green{color:#27ae60}
@@ -32,6 +33,13 @@ main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 .status-note{font-size:0.78rem;color:#888;font-style:italic;margin-top:10px}
 .divider{border:none;border-top:1px solid #e8e6e2;margin:16px 0}
+.total-bar{background:#f0eaf7;border:1px solid #d8c8ec;border-radius:10px;padding:14px 18px;margin-top:4px}
+.total-bar-header{font-size:0.72rem;font-weight:700;color:#8e44ad;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.total-bar-since{font-size:0.72rem;color:#aaa;font-weight:400}
+.total-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.total-stat{display:flex;flex-direction:column}
+.total-stat-label{font-size:0.68rem;color:#9b6bb5;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px}
+.total-stat-value{font-size:1rem;font-weight:700;color:#5b2d8e}
 .accordion{border:1px solid #e8e6e2;border-radius:12px;overflow:hidden;background:#fff}
 .accordion-header{padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#2d7d7d;font-size:1rem;user-select:none;background:#fff}
 .accordion-header:hover{background:#f5f4f2}
@@ -56,6 +64,7 @@ footer span{color:#2d7d7d}
   main{padding:0 16px}
   .card{padding:16px}
   .status-grid{grid-template-columns:1fr 1fr}
+  .total-grid{grid-template-columns:1fr 1fr}
   .accordion-header{padding:14px 16px}
   .accordion-body{padding:0 16px 16px 16px}
 }
@@ -88,7 +97,7 @@ footer span{color:#2d7d7d}
       <div class="status-item"><div class="status-label">Webserver</div><div class="status-value green">nginx ✓</div></div>
     </div>
     <hr class="divider">
-    <div class="card-subtitle">Energie & Kosten</div>
+    <div class="card-subtitle">Energie &amp; Kosten – Live</div>
     <div class="status-grid">
       <div class="status-item energy-item"><div class="status-label">Verbrauch</div><div class="status-value" id="watt">–</div></div>
       <div class="status-item energy-item"><div class="status-label">Kosten / Tag</div><div class="status-value" id="cost_day">–</div></div>
@@ -96,6 +105,33 @@ footer span{color:#2d7d7d}
       <div class="status-item energy-item"><div class="status-label">CO₂ / Tag</div><div class="status-value" id="co2">–</div></div>
     </div>
     <p class="status-note">* Geschätzter Verbrauch basierend auf CPU Last. Strompreis: 0,30 €/kWh.</p>
+
+    <hr class="divider">
+
+    <div class="total-bar">
+      <div class="total-bar-header">
+        Gesamtstatistik seit Inbetriebnahme
+        <span class="total-bar-since" id="total-since">wird geladen...</span>
+      </div>
+      <div class="total-grid">
+        <div class="total-stat">
+          <span class="total-stat-label">Gesamtlaufzeit</span>
+          <span class="total-stat-value" id="total-runtime">–</span>
+        </div>
+        <div class="total-stat">
+          <span class="total-stat-label">Gesamtverbrauch</span>
+          <span class="total-stat-value" id="total-kwh">–</span>
+        </div>
+        <div class="total-stat">
+          <span class="total-stat-label">Gesamtkosten</span>
+          <span class="total-stat-value" id="total-cost">–</span>
+        </div>
+        <div class="total-stat">
+          <span class="total-stat-label">CO₂ gesamt</span>
+          <span class="total-stat-value" id="total-co2">–</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="accordion">
@@ -145,6 +181,8 @@ footer span{color:#2d7d7d}
         <li>Kostenberechnung basierend auf aktuellem deutschen Strompreis (0,30 €/kWh)</li>
         <li>CO₂-Emissionen berechnet basierend auf deutschem Strommix</li>
         <li>REST API Endpunkt /api/power erstellt</li>
+        <li>Gesamtstatistik wird persistent in energy_log.json gespeichert – bleibt nach Neustart erhalten</li>
+        <li>REST API Endpunkt /api/energy_total liefert kumulierte Werte seit Inbetriebnahme</li>
       </ul>
       <div class="tags">
         <span class="tag">Python</span>
@@ -152,6 +190,7 @@ footer span{color:#2d7d7d}
         <span class="tag">Green IT</span>
         <span class="tag">JavaScript</span>
         <span class="tag">Energieeffizienz</span>
+        <span class="tag">JSON</span>
       </div>
     </div>
   </div>
@@ -235,8 +274,37 @@ async function loadStatus() {
   }
 }
 
-setInterval(loadStatus, 2000);
+async function loadTotals() {
+  try {
+    const res = await fetch("/api/energy_total");
+    const data = await res.json();
+    const parts = data.runtime.split(":");
+    const days = parseInt(parts[0]);
+    const hours = parseInt(parts[1]);
+    const mins = parseInt(parts[2]);
+    let rt = "";
+    if (days > 0) rt += days + "T ";
+    if (days > 0 || hours > 0) rt += hours + "Std. ";
+    rt += mins + "Min.";
+    document.getElementById("total-runtime").textContent = rt.trim();
+    document.getElementById("total-kwh").textContent = data.total_kwh + " kWh";
+    document.getElementById("total-cost").textContent = data.total_cost + " €";
+    const co2_grams = Math.round(data.total_co2 * 1000 * 10) / 10;
+    document.getElementById("total-co2").textContent = co2_grams + " g CO₂";
+    document.getElementById("total-since").textContent = "seit " + data.start_date;
+  } catch {
+    document.getElementById("total-runtime").textContent = "–";
+    document.getElementById("total-kwh").textContent = "–";
+    document.getElementById("total-cost").textContent = "–";
+    document.getElementById("total-co2").textContent = "–";
+    document.getElementById("total-since").textContent = "API offline";
+  }
+}
+
+setInterval(loadStatus, 1000);
+setInterval(loadTotals, 1000);
 loadStatus();
+loadTotals();
 
 async function sendMessage() {
   const input = document.getElementById("chat-input");
