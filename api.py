@@ -126,10 +126,10 @@ class Handler(BaseHTTPRequestHandler):
                 total_kwh = round(log["total_wh"] / 1000, 4)
                 total_cost = round(total_kwh * STROMPREIS, 4)
                 total_co2 = round(total_kwh * 0.4, 4)
-                seconds = int(get_uptime_seconds())
-                days = seconds // 86400
-                hours = (seconds % 86400) // 3600
-                minutes = (seconds % 3600) // 60
+                total_mins = log["total_minutes"]
+                days = total_mins // 1440
+                hours = (total_mins % 1440) // 60
+                minutes = total_mins % 60
                 runtime = f"{days:02d}:{hours:02d}:{minutes:02d}"
                 data = {
                     "runtime": runtime,
