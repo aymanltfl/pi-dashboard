@@ -21,14 +21,12 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/api/chat":
             length = int(self.headers["Content-Length"])
             body = json.loads(self.rfile.read(length))
-            user_message = body.get("message", "")
+            history = body.get("messages", [])
             try:
+                messages = [{"role": "system", "content": SYSTEM_PROMPT}] + history
                 response = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": user_message}
-                    ]
+                    messages=messages
                 )
                 reply = response.choices[0].message.content
                 self.send_response(200)
