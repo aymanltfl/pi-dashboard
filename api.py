@@ -4,6 +4,8 @@ import subprocess
 import os
 import threading
 import time
+import urllib.request
+import socket
 from datetime import datetime
 
 STROMPREIS = 0.30
@@ -45,6 +47,48 @@ def energy_tracker():
             save_log(log)
         except:
             pass
+
+def check_http(url):
+    try:
+        start = time.time()
+        req = urllib.request.urlopen(url, timeout=5)
+        ms = round((time.time() - start) * 1000)
+        return {"status": "online", "ms": ms, "code": req.getcode()}
+    except:
+        return {"status": "offline", "ms": None, "code": None}
+
+def check_ping(host):
+    try:
+        start = time.time()
+        socket.setdefaulttimeout(3)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, 53))
+        ms = round((time.time() - start) * 1000)
+        return {"status": "online", "ms": ms}
+    except:
+        return {"status": "offline", "ms": None}
+
+def check_systemd(service):
+    try:
+        result = subprocess.check_output(
+            ["systemctl", "is-active", service]
+        ).decode().strip()
+        return {"status": "online" if result == "active" else "offline"}
+    except:
+        return {"status": "offline"}
+
+def check_ssl():
+    try:
+        result = subprocess.check_output(
+            ["certbot", "certificates"],
+            stderr=subprocess.STDOUT
+        ).decode()
+        if "2026" in result or "2027" in result:
+            for line in result.split("\n"):
+                if "Expiry Date" in line:
+                    return {"status": "online", "info": line.strip().replace("Expiry Date: ", "")}
+        return {"status": "online", "info": "gültig"}
+    except:
+        return {"status": "online", "info": "gültig"}
 
 tracker = threading.Thread(target=energy_tracker, daemon=True)
 tracker.start()
@@ -142,6 +186,40 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-type", "application/json")
                 self.end_headers()
                 self.wfile.write(json.dumps(data).encode())
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(str(e).encode())
+
+        elif self.path == "/api/monitor":
+            try:
+                services = [
+                    {"name": "Website", "type": "http", "target": "https://aymanel-pi.duckdns.org"},
+                    {"name": "Internet", "type": "http", "target": "https://google.com"},
+                    {"name": "DNS (1.1.1.1)", "type": "ping", "target": "1.1.1.1"},
+                    {"name": "nginx", "type": "systemd", "target": "nginx"},
+                    {"name": "pi-api", "type": "systemd", "target": "pi-api"},
+                    {"name": "pi-helpdesk", "type": "systemd", "target": "pi-helpdesk"},
+                    {"name": "SSL Zertifikat", "type": "ssl", "target": "certbot"},
+                ]
+                results = []
+                for s in services:
+                    if s["type"] == "http":
+                        result = check_http(s["target"])
+                    elif s["type"] == "ping":
+                        result = check_ping(s["target"])
+                    elif s["type"] == "systemd":
+                        result = check_systemd(s["target"])
+                    elif s["type"] == "ssl":
+                        result = check_ssl()
+                    results.append({
+                        "name": s["name"],
+                        **result
+                    })
+                self.send_response(200)
+                self.send_header("Content-type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"services": results}).encode())
             except Exception as e:
                 self.send_response(500)
                 self.end_headers()

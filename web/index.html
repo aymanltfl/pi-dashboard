@@ -16,7 +16,7 @@ h1{font-size:2.5rem;font-weight:700;margin-bottom:12px}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .badge{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:3px 10px;border-radius:20px}
 .badge.teal{background:#2d7d7d;color:#fff;border-color:#2d7d7d}
-main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
+main{max-width:880px;margin:28px auto;padding:0 28px 100px 28px;display:grid;gap:16px}
 .card{background:#fff;border:1px solid #e8e6e2;border-radius:12px;padding:24px}
 .card-title{font-size:1.1rem;font-weight:700;color:#2d7d7d;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #e8e6e2}
 .card-subtitle{font-size:0.78rem;font-weight:700;color:#2d7d7d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;margin-top:16px}
@@ -24,7 +24,6 @@ main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 .status-item{background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:10px 12px;position:relative;overflow:hidden}
 .status-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#2d7d7d}
 .energy-item::before{background:#27ae60!important}
-.total-item::before{background:#8e44ad!important}
 .status-label{font-size:0.68rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
 .status-value{font-size:0.95rem;font-weight:600;color:#1a1a1a}
 .status-value.green{color:#27ae60}
@@ -40,6 +39,14 @@ main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 .total-stat{display:flex;flex-direction:column}
 .total-stat-label{font-size:0.68rem;color:#9b6bb5;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px}
 .total-stat-value{font-size:1rem;font-weight:700;color:#5b2d8e}
+.monitor-list{display:grid;gap:8px}
+.monitor-item{display:flex;align-items:center;justify-content:space-between;background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:10px 14px}
+.monitor-name{font-size:0.88rem;font-weight:600;color:#1a1a1a}
+.monitor-right{display:flex;align-items:center;gap:10px}
+.monitor-ms{font-size:0.75rem;color:#888}
+.monitor-badge{font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:20px}
+.monitor-badge.online{background:#e8f8ee;color:#1a7a3e}
+.monitor-badge.offline{background:#fdecea;color:#c0392b}
 .accordion{border:1px solid #e8e6e2;border-radius:12px;overflow:hidden;background:#fff}
 .accordion-header{padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#2d7d7d;font-size:1rem;user-select:none;background:#fff}
 .accordion-header:hover{background:#f5f4f2}
@@ -54,19 +61,34 @@ main{max-width:880px;margin:28px auto;padding:0 28px;display:grid;gap:16px}
 .tags{display:flex;flex-wrap:wrap;gap:6px}
 .tag{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:4px 10px;border-radius:6px;font-family:monospace}
 .coming-soon{background:#f5f4f2;border:1px dashed #ccc;border-radius:12px;padding:24px;text-align:center;color:#888;font-size:0.85rem}
-.chat-bubble-user{align-self:flex-end;background:#2d7d7d;color:white;padding:8px 14px;border-radius:12px 12px 2px 12px;font-size:0.85rem;max-width:80%}
-.chat-bubble-bot{align-self:flex-start;background:#fff;border:1px solid #e8e6e2;padding:8px 14px;border-radius:12px 12px 12px 2px;font-size:0.85rem;max-width:80%;color:#1a1a1a;line-height:1.6}
 footer{text-align:center;padding:24px;font-size:0.77rem;color:#888}
 footer span{color:#2d7d7d}
+
+/* Floating Chat Button */
+.chat-fab{position:fixed;bottom:28px;right:28px;width:56px;height:56px;background:#2d7d7d;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.15);z-index:1000;transition:transform 0.2s}
+.chat-fab:hover{transform:scale(1.08)}
+.chat-fab svg{width:26px;height:26px;fill:white}
+.chat-window{position:fixed;bottom:96px;right:28px;width:340px;height:480px;background:#fff;border:1px solid #e8e6e2;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:999;display:none;flex-direction:column;overflow:hidden}
+.chat-window.open{display:flex}
+.chat-header{background:#2d7d7d;color:white;padding:14px 18px;font-weight:700;font-size:0.9rem;display:flex;justify-content:space-between;align-items:center}
+.chat-close{cursor:pointer;font-size:1.2rem;line-height:1}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f5f4f2}
+.chat-input-row{display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid #e8e6e2}
+.chat-input-row input{flex:1;padding:8px 12px;border:1px solid #e8e6e2;border-radius:8px;font-size:0.85rem;background:#fff;color:#1a1a1a}
+.chat-input-row button{padding:8px 14px;background:#2d7d7d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:600}
+.chat-bubble-user{align-self:flex-end;background:#2d7d7d;color:white;padding:8px 14px;border-radius:12px 12px 2px 12px;font-size:0.83rem;max-width:85%}
+.chat-bubble-bot{align-self:flex-start;background:#fff;border:1px solid #e8e6e2;padding:8px 14px;border-radius:12px 12px 12px 2px;font-size:0.83rem;max-width:85%;color:#1a1a1a;line-height:1.6}
+
 @media(max-width:600px){
   h1{font-size:1.8rem}
   .header-inner{padding:0 16px}
-  main{padding:0 16px}
+  main{padding:0 16px 100px 16px}
   .card{padding:16px}
   .status-grid{grid-template-columns:1fr 1fr}
   .total-grid{grid-template-columns:1fr 1fr}
   .accordion-header{padding:14px 16px}
   .accordion-body{padding:0 16px 16px 16px}
+  .chat-window{width:calc(100vw - 32px);right:16px}
 }
 </style>
 </head>
@@ -74,12 +96,12 @@ footer span{color:#2d7d7d}
 <div class="header">
   <div class="header-inner">
     <h1>Ayman El-Toufaili</h1>
-    <div class="meta">Umschüler zum IT-System-Elektroniker seit August 2025 &nbsp;·&nbsp; Self-hosted Raspberry Pi Dashboard & Projektseite &nbsp;·&nbsp; <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank">GitHub Repository</a></div>
+    <div class="meta">Umschüler zum IT-System-Elektroniker seit August 2025 &nbsp;·&nbsp; Self-hosted Raspberry Pi Dashboard &nbsp;·&nbsp; <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank">GitHub Repository</a></div>
     <div class="badges">
       <span class="badge teal">Praktikum ab September 2026</span>
-      <span class="badge">Zielbereiche: Helpdesk &amp; Support, Netzwerktechnik, Systemadministration</span>
-      <span class="badge tech">Linux</span>
-      <span class="badge tech">Raspberry Pi</span>
+      <span class="badge">Helpdesk &amp; Support</span>
+      <span class="badge">Netzwerktechnik</span>
+      <span class="badge">Systemadministration</span>
     </div>
   </div>
 </div>
@@ -87,7 +109,7 @@ footer span{color:#2d7d7d}
 
   <div class="card">
     <div class="card-title">System Monitor</div>
-    <div class="live-dot">Live – Raspberry Pi 4</div>
+    <div class="live-dot">Live – Raspberry Pi 4, Marl</div>
     <div class="card-subtitle">Server Status</div>
     <div class="status-grid">
       <div class="status-item"><div class="status-label">Uptime</div><div class="status-value green" id="uptime">–</div></div>
@@ -105,38 +127,33 @@ footer span{color:#2d7d7d}
       <div class="status-item energy-item"><div class="status-label">CO₂ / Tag</div><div class="status-value" id="co2">–</div></div>
     </div>
     <p class="status-note">* Geschätzter Verbrauch basierend auf CPU Last. Strompreis: 0,30 €/kWh.</p>
-
     <hr class="divider">
-
     <div class="total-bar">
       <div class="total-bar-header">
         Gesamtstatistik seit Inbetriebnahme
         <span class="total-bar-since" id="total-since">wird geladen...</span>
       </div>
       <div class="total-grid">
-        <div class="total-stat">
-          <span class="total-stat-label">Gesamtlaufzeit</span>
-          <span class="total-stat-value" id="total-runtime">–</span>
-        </div>
-        <div class="total-stat">
-          <span class="total-stat-label">Gesamtverbrauch</span>
-          <span class="total-stat-value" id="total-kwh">–</span>
-        </div>
-        <div class="total-stat">
-          <span class="total-stat-label">Gesamtkosten</span>
-          <span class="total-stat-value" id="total-cost">–</span>
-        </div>
-        <div class="total-stat">
-          <span class="total-stat-label">CO₂ gesamt</span>
-          <span class="total-stat-value" id="total-co2">–</span>
-        </div>
+        <div class="total-stat"><span class="total-stat-label">Gesamtlaufzeit</span><span class="total-stat-value" id="total-runtime">–</span></div>
+        <div class="total-stat"><span class="total-stat-label">Gesamtverbrauch</span><span class="total-stat-value" id="total-kwh">–</span></div>
+        <div class="total-stat"><span class="total-stat-label">Gesamtkosten</span><span class="total-stat-value" id="total-cost">–</span></div>
+        <div class="total-stat"><span class="total-stat-label">CO₂ gesamt</span><span class="total-stat-value" id="total-co2">–</span></div>
       </div>
     </div>
   </div>
 
+  <div class="card">
+    <div class="card-title">Service Monitor</div>
+    <div class="live-dot">Live – alle 30 Sekunden</div>
+    <div class="monitor-list" id="monitor-list">
+      <div style="color:#888;font-size:0.85rem;">wird geladen...</div>
+    </div>
+    <p class="status-note">* Überwacht Erreichbarkeit von Services und Netzwerkdiensten.</p>
+  </div>
+
   <div class="accordion">
     <div class="accordion-header" onclick="toggleAccordion('p1')">
-      Projekt 1 – Raspberry Pi Heimserver + Server Status
+      Projekt 1 – Raspberry Pi Heimserver
       <span class="accordion-arrow" id="arrow-p1">▼</span>
     </div>
     <div class="accordion-body" id="p1">
@@ -152,19 +169,7 @@ footer span{color:#2d7d7d}
         <li>SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv</li>
       </ul>
       <div class="tags">
-        <span class="tag">Raspberry Pi 4</span>
-        <span class="tag">Linux</span>
-        <span class="tag">nginx</span>
-        <span class="tag">Python</span>
-        <span class="tag">Bash</span>
-        <span class="tag">systemd</span>
-        <span class="tag">DuckDNS</span>
-        <span class="tag">SSH</span>
-        <span class="tag">Fritz!Box</span>
-        <span class="tag">REST API</span>
-        <span class="tag">UFW</span>
-        <span class="tag">Fail2ban</span>
-        <span class="tag">Let's Encrypt</span>
+        <span class="tag">Raspberry Pi 4</span><span class="tag">Linux</span><span class="tag">nginx</span><span class="tag">Python</span><span class="tag">Bash</span><span class="tag">systemd</span><span class="tag">DuckDNS</span><span class="tag">SSH</span><span class="tag">Fritz!Box</span><span class="tag">REST API</span><span class="tag">UFW</span><span class="tag">Fail2ban</span><span class="tag">Let's Encrypt</span>
       </div>
     </div>
   </div>
@@ -185,12 +190,7 @@ footer span{color:#2d7d7d}
         <li>REST API Endpunkt /api/energy_total liefert kumulierte Werte seit Inbetriebnahme</li>
       </ul>
       <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag">REST API</span>
-        <span class="tag">Green IT</span>
-        <span class="tag">JavaScript</span>
-        <span class="tag">Energieeffizienz</span>
-        <span class="tag">JSON</span>
+        <span class="tag">Python</span><span class="tag">REST API</span><span class="tag">Green IT</span><span class="tag">JavaScript</span><span class="tag">Energieeffizienz</span><span class="tag">JSON</span>
       </div>
     </div>
   </div>
@@ -201,46 +201,80 @@ footer span{color:#2d7d7d}
       <span class="accordion-arrow" id="arrow-p3">▼</span>
     </div>
     <div class="accordion-body" id="p3">
-      <p class="project-desc">KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3).</p>
+      <p class="project-desc">KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3). Der Bot merkt sich den Gesprächsverlauf und kann auf vorherige Fragen eingehen.</p>
       <ul class="project-details">
         <li>Python Backend entwickelt – verarbeitet Anfragen und kommuniziert mit Groq API</li>
         <li>LLaMA 3 Modell via Groq API integriert – antwortet auf IT-Fragen auf Deutsch</li>
+        <li>Gesprächsgedächtnis implementiert – Bot erinnert sich an den Verlauf</li>
         <li>REST API Endpunkt /api/chat erstellt</li>
         <li>nginx Reverse Proxy für den Bot konfiguriert</li>
         <li>Als systemd-Service eingerichtet – startet automatisch</li>
-        <li>Frontend Chat-Interface in HTML/JavaScript entwickelt</li>
+        <li>Floating Chat-Widget in die Website eingebaut</li>
       </ul>
       <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag">Groq API</span>
-        <span class="tag">LLaMA 3</span>
-        <span class="tag">REST API</span>
-        <span class="tag">JavaScript</span>
-        <span class="tag">nginx</span>
-        <span class="tag">systemd</span>
+        <span class="tag">Python</span><span class="tag">Groq API</span><span class="tag">LLaMA 3</span><span class="tag">REST API</span><span class="tag">JavaScript</span><span class="tag">nginx</span><span class="tag">systemd</span>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">IT-Helpdesk Chatbot – Ausprobieren</div>
-    <p style="font-size:0.85rem;color:#555;margin-bottom:16px;">Hast du ein IT-Problem? Frag einfach!</p>
-    <div id="chat-messages" style="height:260px;overflow-y:auto;background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;"></div>
-    <div style="display:flex;gap:8px;">
-      <input id="chat-input" type="text" placeholder="z.B. Mein WLAN funktioniert nicht..." style="flex:1;padding:10px 14px;border:1px solid #e8e6e2;border-radius:8px;background:#fff;color:#1a1a1a;font-size:0.88rem;">
-      <button onclick="sendMessage()" style="padding:10px 20px;background:#2d7d7d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:600;">Senden</button>
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('p4')">
+      Projekt 4 – Service Monitor
+      <span class="accordion-arrow" id="arrow-p4">▼</span>
+    </div>
+    <div class="accordion-body" id="p4">
+      <p class="project-desc">Automatische Überwachung von Services und Netzwerkdiensten in Echtzeit. Der Monitor prüft alle 30 Sekunden ob Webservices, DNS, systemd-Services und das SSL-Zertifikat erreichbar und aktiv sind – wie es in professionellen IT-Umgebungen eingesetzt wird.</p>
+      <ul class="project-details">
+        <li>HTTP-Check für externe Dienste (Website, Internet)</li>
+        <li>DNS-Erreichbarkeit prüfen (1.1.1.1)</li>
+        <li>systemd-Services live überwachen (nginx, pi-api, pi-helpdesk)</li>
+        <li>SSL-Zertifikat Gültigkeit prüfen</li>
+        <li>Antwortzeiten in Millisekunden messen</li>
+        <li>REST API Endpunkt /api/monitor erstellt</li>
+        <li>Live-Dashboard mit farbigen Status-Badges</li>
+      </ul>
+      <div class="tags">
+        <span class="tag">Python</span><span class="tag">REST API</span><span class="tag">Monitoring</span><span class="tag">systemd</span><span class="tag">SSL</span><span class="tag">HTTP</span><span class="tag">DNS</span>
+      </div>
     </div>
   </div>
 
   <div class="coming-soon">Weitere Projekte folgen ...</div>
 </main>
+
 <footer>Gehostet auf eigenem Raspberry Pi · <span>Ayman El-Toufaili</span></footer>
+
+<!-- Floating Chat Button -->
+<div class="chat-fab" onclick="toggleChat()">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+  </svg>
+</div>
+
+<!-- Chat Window -->
+<div class="chat-window" id="chat-window">
+  <div class="chat-header">
+    IT-Helpdesk Bot
+    <span class="chat-close" onclick="toggleChat()">✕</span>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <input id="chat-input" type="text" placeholder="IT-Frage stellen...">
+    <button onclick="sendMessage()">Senden</button>
+  </div>
+</div>
+
 <script>
 function toggleAccordion(id) {
   const body = document.getElementById(id);
   const arrow = document.getElementById("arrow-" + id);
   body.classList.toggle("open");
   arrow.classList.toggle("open");
+}
+
+function toggleChat() {
+  const win = document.getElementById("chat-window");
+  win.classList.toggle("open");
 }
 
 async function loadStatus() {
@@ -294,17 +328,35 @@ async function loadTotals() {
     document.getElementById("total-since").textContent = "seit " + data.start_date;
   } catch {
     document.getElementById("total-runtime").textContent = "–";
-    document.getElementById("total-kwh").textContent = "–";
-    document.getElementById("total-cost").textContent = "–";
-    document.getElementById("total-co2").textContent = "–";
-    document.getElementById("total-since").textContent = "API offline";
+  }
+}
+
+async function loadMonitor() {
+  try {
+    const res = await fetch("/api/monitor");
+    const data = await res.json();
+    const list = document.getElementById("monitor-list");
+    list.innerHTML = data.services.map(s => `
+      <div class="monitor-item">
+        <span class="monitor-name">${s.name}</span>
+        <div class="monitor-right">
+          ${s.ms ? `<span class="monitor-ms">${s.ms}ms</span>` : ""}
+          ${s.info ? `<span class="monitor-ms">${s.info}</span>` : ""}
+          <span class="monitor-badge ${s.status}">${s.status === "online" ? "Online" : "Offline"}</span>
+        </div>
+      </div>
+    `).join("");
+  } catch {
+    document.getElementById("monitor-list").innerHTML = "<div style='color:#888;font-size:0.85rem;'>Monitor offline</div>";
   }
 }
 
 setInterval(loadStatus, 1000);
-setInterval(loadTotals, 1000);
+setInterval(loadTotals, 60000);
+setInterval(loadMonitor, 30000);
 loadStatus();
 loadTotals();
+loadMonitor();
 
 let chatHistory = [];
 
