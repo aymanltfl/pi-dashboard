@@ -229,4 +229,4 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
-HTTPServer(("0.0.0.0", 5000), Handler).serve_forever()
+HTTPServer(("127.0.0.1", 5000), Handler).serve_forever()

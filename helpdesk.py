@@ -49,4 +49,4 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
-HTTPServer(("0.0.0.0", 5001), Handler).serve_forever()
+HTTPServer(("127.0.0.1", 5001), Handler).serve_forever()
