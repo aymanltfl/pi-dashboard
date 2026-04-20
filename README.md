@@ -7,7 +7,7 @@ Persönliches Heimserver-Projekt auf Basis eines Raspberry Pi 4 unter Linux (Ras
 
 ## Projektübersicht
 
-Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration.
+Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration und Service-Monitoring.
 
 ---
 
@@ -33,8 +33,17 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 ### Projekt 3 - IT-Helpdesk Bot
 - KI-Chatbot mit Groq API (LLaMA 3)
 - Beantwortet IT-Fragen automatisch auf Deutsch
+- Gesprächsgedächtnis implementiert
 - Python Backend + REST API (/api/chat)
-- Chat-Interface direkt auf der Website
+- Floating Chat-Widget auf der Website
+
+### Projekt 4 - Service Monitor
+- Automatische Überwachung von Services alle 30 Sekunden
+- HTTP-Check für externe Dienste (Website, Internet)
+- DNS-Erreichbarkeit prüfen
+- systemd-Services live überwachen
+- SSL-Zertifikat Gültigkeit prüfen
+- Antwortzeiten in Millisekunden messen
 
 ---
 
@@ -57,25 +66,38 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 
 ## Architektur
 
-Internet --> DuckDNS (aymanel-pi.duckdns.org) --> Fritz!Box 7560 (Port 80/443) --> Raspberry Pi 4
+Internet --> DuckDNS (aymanel-pi.duckdns.org) --> Fritz!Box 7560 (Port 443/80) --> Raspberry Pi 4
 
 Raspberry Pi 4:
-- nginx (Reverse Proxy)
+- nginx (einziger oeffentlicher Entry Point, Port 443/80)
   - / --> index.html
-  - /api/status --> Python API (Port 5000)
-  - /api/uptime --> Python API (Port 5000)
-  - /api/power --> Python API (Port 5000)
-  - /api/energy_total --> Python API (Port 5000)
-  - /api/chat --> Helpdesk Bot (Port 5001)
-- Tailscale VPN (Remote SSH Zugriff von überall)
+  - /api/status --> Python API (nur localhost)
+  - /api/uptime --> Python API (nur localhost)
+  - /api/power --> Python API (nur localhost)
+  - /api/energy_total --> Python API (nur localhost)
+  - /api/monitor --> Python API (nur localhost)
+  - /api/chat --> Helpdesk Bot (nur localhost)
+- APIs binden nur auf 127.0.0.1 - nicht direkt aus dem Internet erreichbar
+- Tailscale VPN (Remote SSH Zugriff von überall ohne Portfreigabe)
 - DuckDNS Cronjob (IP-Update alle 5 Minuten)
+
+---
+
+## Sicherheit
+
+- nginx als einziger oeffentlicher Entry Point
+- APIs nur auf localhost gebunden (127.0.0.1) - kein direkter Internetzugriff
+- UFW Firewall - nur Port 80, 443 und 22 offen
+- Fail2ban - automatische IP-Sperrung bei Brute-Force
+- SSL/TLS mit Let's Encrypt - automatische Erneuerung
+- Tailscale VPN fuer sicheren Remote-Zugriff ohne offenen SSH-Port im Router
 
 ---
 
 ## Projektstruktur
 
 pi-dashboard/
-- api.py              (REST API: Status, Uptime, Power, Energy)
+- api.py              (REST API: Status, Uptime, Power, Energy, Monitor)
 - helpdesk.py         (IT-Helpdesk Bot via Groq API)
 - energy_log.json     (Persistente Energiedaten)
 - duckdns/update.sh   (DuckDNS IP-Update Script)
