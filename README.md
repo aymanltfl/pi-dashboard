@@ -6,7 +6,7 @@ Live erreichbar unter: https://aymanel-pi.duckdns.org
 
 Demo-Zugang:
 - Benutzer: demo
-- Passwort: portfolio2026
+- Passwort: demo2026
 
 ---
 
