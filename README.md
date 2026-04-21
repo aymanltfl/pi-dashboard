@@ -1,13 +1,18 @@
 # Raspberry Pi Home Server Dashboard
 
 Persönliches Heimserver-Projekt auf Basis eines Raspberry Pi 4 unter Linux (Raspberry Pi OS).
-Öffentlich erreichbar unter: https://aymanel-pi.duckdns.org
+
+Live erreichbar unter: https://aymanel-pi.duckdns.org
+
+Demo-Zugang:
+- Benutzer: demo
+- Passwort: portfolio2026
 
 ---
 
 ## Projektübersicht
 
-Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration und Service-Monitoring.
+Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration, Service-Monitoring und Authentifizierung.
 
 ---
 
@@ -45,6 +50,14 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 - SSL-Zertifikat Gültigkeit prüfen
 - Antwortzeiten in Millisekunden messen
 
+### Projekt 5 - Authentifizierung & Login
+- Eigenes JWT-basiertes Authentifizierungssystem
+- Python Auth-Service (nur localhost)
+- Zwei Benutzerrollen: Admin und Demo
+- Login-Seite im Dashboard-Design
+- Token-Verifizierung bei jedem Seitenaufruf
+- Logout-Funktion mit Token-Löschung
+
 ---
 
 ## Technologien
@@ -56,7 +69,7 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 | Webserver | nginx |
 | Backend | Python 3 |
 | DNS | DuckDNS |
-| Security | UFW, Fail2ban, Let's Encrypt |
+| Security | UFW, Fail2ban, Let's Encrypt, JWT |
 | Remote Access | Tailscale VPN |
 | KI | Groq API, LLaMA 3 |
 | Versionskontrolle | Git, GitHub |
@@ -70,15 +83,17 @@ Internet --> DuckDNS (aymanel-pi.duckdns.org) --> Fritz!Box 7560 (Port 443/80) -
 
 Raspberry Pi 4:
 - nginx (einziger oeffentlicher Entry Point, Port 443/80)
-  - / --> index.html
-  - /api/status --> Python API (nur localhost)
-  - /api/uptime --> Python API (nur localhost)
-  - /api/power --> Python API (nur localhost)
-  - /api/energy_total --> Python API (nur localhost)
-  - /api/monitor --> Python API (nur localhost)
-  - /api/chat --> Helpdesk Bot (nur localhost)
-- APIs binden nur auf 127.0.0.1 - nicht direkt aus dem Internet erreichbar
-- Tailscale VPN (Remote SSH Zugriff von überall ohne Portfreigabe)
+  - / --> index.html (Login-geschuetzt)
+  - /login.html --> Login-Seite
+  - /auth/ --> Auth Service (nur localhost, Port 5002)
+  - /api/status --> Python API (nur localhost, Port 5000)
+  - /api/uptime --> Python API (nur localhost, Port 5000)
+  - /api/power --> Python API (nur localhost, Port 5000)
+  - /api/energy_total --> Python API (nur localhost, Port 5000)
+  - /api/monitor --> Python API (nur localhost, Port 5000)
+  - /api/chat --> Helpdesk Bot (nur localhost, Port 5001)
+- Alle APIs binden nur auf 127.0.0.1 - kein direkter Internetzugriff
+- Tailscale VPN fuer sicheren Remote-Zugriff ohne offenen SSH-Port im Router
 - DuckDNS Cronjob (IP-Update alle 5 Minuten)
 
 ---
@@ -86,11 +101,12 @@ Raspberry Pi 4:
 ## Sicherheit
 
 - nginx als einziger oeffentlicher Entry Point
-- APIs nur auf localhost gebunden (127.0.0.1) - kein direkter Internetzugriff
-- UFW Firewall - nur Port 80, 443 und 22 offen
+- Alle APIs nur auf localhost gebunden (127.0.0.1)
+- JWT-Authentifizierung schuetzt das komplette Dashboard
+- UFW Firewall - nur Port 80, 443 offen
 - Fail2ban - automatische IP-Sperrung bei Brute-Force
 - SSL/TLS mit Let's Encrypt - automatische Erneuerung
-- Tailscale VPN fuer sicheren Remote-Zugriff ohne offenen SSH-Port im Router
+- Tailscale VPN fuer sicheren Remote-Zugriff
 
 ---
 
@@ -98,10 +114,12 @@ Raspberry Pi 4:
 
 pi-dashboard/
 - api.py              (REST API: Status, Uptime, Power, Energy, Monitor)
+- auth.py             (JWT Authentication Service)
 - helpdesk.py         (IT-Helpdesk Bot via Groq API)
 - energy_log.json     (Persistente Energiedaten)
 - duckdns/update.sh   (DuckDNS IP-Update Script)
 - web/index.html      (Frontend Dashboard)
+- web/login.html      (Login-Seite)
 
 ---
 
