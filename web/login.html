@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login – Ayman El-Toufaili</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#f5f4f2;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.login-card{background:#fff;border:1px solid #e8e6e2;border-radius:12px;padding:40px 36px;width:100%;max-width:380px;position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#2d7d7d}
+.login-title{font-size:1.4rem;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.login-sub{font-size:0.82rem;color:#888;margin-bottom:28px}
+.login-sub span{color:#2d7d7d;font-weight:600}
+.form-group{margin-bottom:16px}
+.form-label{font-size:0.78rem;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 14px;border:1px solid #e8e6e2;border-radius:8px;font-size:0.9rem;color:#1a1a1a;background:#fff;outline:none;transition:border 0.2s}
+.form-input:focus{border-color:#2d7d7d}
+.login-btn{width:100%;padding:11px;background:#2d7d7d;color:white;border:none;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;margin-top:8px;transition:background 0.2s}
+.login-btn:hover{background:#245f5f}
+.error-msg{background:#fdecea;border:1px solid #f5c0bc;border-radius:8px;padding:10px 14px;font-size:0.82rem;color:#c0392b;margin-bottom:16px;display:none}
+.footer-note{font-size:0.75rem;color:#aaa;text-align:center;margin-top:24px}
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <div class="login-title">Ayman El-Toufaili</div>
+  <div class="login-sub">Raspberry Pi Dashboard &nbsp;·&nbsp; <span>Portfolio</span></div>
+
+  <div class="error-msg" id="error">Ungültige Zugangsdaten. Bitte erneut versuchen.</div>
+
+  <div class="form-group">
+    <label class="form-label">Benutzername</label>
+    <input class="form-input" type="text" id="username" placeholder="z.B. demo" autocomplete="username">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Passwort</label>
+    <input class="form-input" type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+  </div>
+
+  <button class="login-btn" onclick="login()">Einloggen</button>
+
+  <div class="footer-note">Raspberry Pi 4 · Marl, NRW</div>
+</div>
+
+<script>
+async function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const error = document.getElementById("error");
+  error.style.display = "none";
+
+  try {
+    const res = await fetch("/auth/login", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({username, password})
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", data.user);
+      window.location.href = "/";
+    } else {
+      error.style.display = "block";
+    }
+  } catch {
+    error.style.display = "block";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  if (localStorage.getItem("token")) {
+    window.location.href = "/";
+  }
+  document.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") login();
+  });
+});
+</script>
+</body>
+</html>
