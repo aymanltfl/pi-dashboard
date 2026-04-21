@@ -125,8 +125,8 @@ pi-dashboard/
 
 ## Autor
 
-Ayman El-Toufaili
-Umschüler zum IT-Systemelektroniker | COMCAVE.COLLEGE Essen
+Ayman
+Umschüler zum IT-Systemelektroniker
 Praktikum ab September 2026 - Helpdesk, Netzwerktechnik, Systemadministration
 
-Gehostet auf eigenem Raspberry Pi - Marl, NRW
+Gehostet auf eigenem Raspberry Pi
