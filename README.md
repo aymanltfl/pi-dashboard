@@ -120,14 +120,17 @@ Alle Backend-Services laufen lokal auf dem Raspberry Pi und sind nicht direkt ö
 
 ## 📁 Projektstruktur
 
+```plaintext
 pi-dashboard/
-├── backend (Python APIs & Services)
-├── frontend (Dashboard UI)
-├── auth service (Login / JWT)
-├── helpdesk bot (KI Chat)
-├── energy monitoring
-├── pi-hole integration
-├── system config (nginx, systemd, scripts)
+├── backend/              # Python APIs & Services
+├── frontend/             # Dashboard UI
+├── auth/                 # JWT Login Service
+├── helpdesk/             # KI Chatbot
+├── energy/               # Energy Monitoring
+├── pihole/               # Pi-hole Integration
+├── system/               # nginx, systemd, scripts
+``` id="q1m8tz"
+
 
 ---
 
