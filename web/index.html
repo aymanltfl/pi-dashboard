@@ -149,6 +149,20 @@ footer span{color:#2d7d7d}
   </div>
 
   <div class="card">
+    <div class="card-title">Pi-hole – Netzwerk Werbeblocker</div>
+    <div class="live-dot">Live – alle 30 Sekunden</div>
+    <div class="status-grid" style="margin-bottom:4px;align-items:stretch;">
+      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Anfragen heute</div><div class="status-value" id="ph-total">–</div></div>
+      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Geblockt</div><div class="status-value" id="ph-blocked">–</div></div>
+      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Prozent</div><div class="status-value green" id="ph-percent">–</div></div>
+      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Blockliste</div><div class="status-value" id="ph-gravity">–</div></div>
+      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Aktive Clients</div><div class="status-value" id="ph-clients">–</div></div>
+      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Cache Treffer</div><div class="status-value" id="ph-cache">–</div></div>
+    </div>
+    <p class="status-note">* Pi-hole filtert DNS-Anfragen im gesamten Heimnetz.</p>
+  </div>
+
+    <div class="card">
     <div class="card-title">Service Monitor</div>
     <div class="live-dot">Live – alle 30 Sekunden</div>
     <div class="monitor-list" id="monitor-list">
@@ -267,6 +281,30 @@ footer span{color:#2d7d7d}
       </div>
     </div>
   </div>
+
+  <div class="accordion">
+  <div class="accordion-header" onclick="toggleAccordion('p6')">
+    Projekt 6 – Pi-hole Netzwerk-Werbeblocker
+    <span class="accordion-arrow" id="arrow-p6">▼</span>
+  </div>
+  <div class="accordion-body" id="p6">
+    <p class="project-desc">Netzwerkweiter Werbeblocker auf DNS-Ebene. Pi-hole filtert Werbung und Tracking für alle Geräte im Heimnetz — Laptops, Smartphones, Smart-TVs — ohne dass auf jedem Gerät etwas installiert werden muss.</p>
+    <ul class="project-details">
+      <li>Pi-hole auf Raspberry Pi installiert und konfiguriert</li>
+      <li>Port-Konflikt mit nginx gelöst — Pi-hole FTL auf Port 8080 umgezogen</li>
+      <li>UFW Firewall für Port 53 und 8080 im Heimnetz freigegeben</li>
+      <li>Fritz!Box DNS auf Pi-hole umgestellt — ganzes Netzwerk gefiltert</li>
+      <li>Fallback DNS konfiguriert — Internet bleibt online wenn Pi aus ist</li>
+      <li>DNS-Rebind-Schutz für eigene Domain eingetragen</li>
+      <li>Zusätzliche Blocklisten hinzugefügt — über 242.000 Domains geblockt</li>
+      <li>Pi-hole API über nginx Reverse Proxy erreichbar</li>
+      <li>Live-Stats Card im Dashboard integriert</li>
+    </ul>
+    <div class="tags">
+      <span class="tag">Pi-hole</span><span class="tag">DNS</span><span class="tag">nginx</span><span class="tag">UFW</span><span class="tag">Fritz!Box</span><span class="tag">Netzwerk</span><span class="tag">Security</span><span class="tag">Linux</span><span class="tag">REST API</span>
+    </div>
+  </div>
+</div>
 
   <div class="coming-soon">Weitere Projekte folgen ...</div>
 </main>
@@ -400,6 +438,46 @@ async function loadMonitor() {
 setInterval(loadStatus, 1000);
 setInterval(loadTotals, 60000);
 setInterval(loadMonitor, 30000);
+
+let piholeToken = null;
+
+async function getPiholeToken() {
+  try {
+    const res = await fetch("/pihole-api/auth", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({password: "p0cQP-lW"})
+    });
+    const data = await res.json();
+    if (data.session && data.session.valid) {
+      piholeToken = data.session.sid;
+    }
+  } catch {}
+}
+
+async function loadPihole() {
+  try {
+    if (!piholeToken) await getPiholeToken();
+    const res = await fetch("/pihole-api/stats/summary", {
+      headers: {"sid": piholeToken}
+    });
+    if (res.status === 401) {
+      piholeToken = null;
+      await getPiholeToken();
+      return;
+    }
+    const data = await res.json();
+    document.getElementById("ph-total").textContent = data.queries.total.toLocaleString();
+    document.getElementById("ph-blocked").textContent = data.queries.blocked.toLocaleString();
+    document.getElementById("ph-percent").textContent = data.queries.percent_blocked.toFixed(1) + " %";
+    document.getElementById("ph-gravity").textContent = data.gravity.domains_being_blocked.toLocaleString();
+    document.getElementById("ph-clients").textContent = data.clients.active;
+    document.getElementById("ph-cache").textContent = data.queries.cached.toLocaleString();
+  } catch {}
+}
+
+setInterval(loadPihole, 30000);
+loadPihole();
 loadStatus();
 loadTotals();
 loadMonitor();
