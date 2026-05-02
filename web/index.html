@@ -3,517 +3,384 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ayman El-Toufaili</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:sans-serif;background:#f5f4f2;color:#1a1a1a;line-height:1.6}
-.header{background:#fff;border-bottom:1px solid #e8e6e2;padding:40px 0 28px;position:relative}
-.header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#2d7d7d}
-.header-inner{max-width:880px;margin:0 auto;padding:0 28px}
-h1{font-size:2.5rem;font-weight:700;margin-bottom:12px}
-.meta{font-size:0.85rem;color:#555;margin-bottom:6px}
-.meta a{color:#2d7d7d;text-decoration:none}
-.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.badge{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:3px 10px;border-radius:20px}
-.badge.teal{background:#2d7d7d;color:#fff;border-color:#2d7d7d}
-.logout-bar{position:absolute;top:16px;right:28px;display:flex;align-items:center;gap:12px}
-.logout-user{font-size:0.8rem;color:#888}
-.logout-btn{padding:5px 14px;background:transparent;border:1px solid #e8e6e2;border-radius:20px;font-size:0.78rem;color:#555;cursor:pointer}
-.logout-btn:hover{background:#f5f4f2}
-main{max-width:880px;margin:28px auto;padding:0 28px 100px 28px;display:grid;gap:16px}
-.card{background:#fff;border:1px solid #e8e6e2;border-radius:12px;padding:24px}
-.card-title{font-size:1.1rem;font-weight:700;color:#2d7d7d;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #e8e6e2}
-.card-subtitle{font-size:0.78rem;font-weight:700;color:#2d7d7d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;margin-top:16px}
-.status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:4px}
-.status-item{background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:10px 12px;position:relative;overflow:hidden}
-.status-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#2d7d7d}
-.energy-item::before{background:#27ae60!important}
-.status-label{font-size:0.68rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
-.status-value{font-size:0.95rem;font-weight:600;color:#1a1a1a}
-.status-value.green{color:#27ae60}
-.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:0.78rem;color:#27ae60;font-weight:600;margin-bottom:10px}
-.live-dot::before{content:'';width:6px;height:6px;background:#27ae60;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-.status-note{font-size:0.78rem;color:#888;font-style:italic;margin-top:10px}
-.divider{border:none;border-top:1px solid #e8e6e2;margin:16px 0}
-.total-bar{background:#f0eaf7;border:1px solid #d8c8ec;border-radius:10px;padding:14px 18px;margin-top:4px}
-.total-bar-header{font-size:0.72rem;font-weight:700;color:#8e44ad;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.total-bar-since{font-size:0.72rem;color:#aaa;font-weight:400}
-.total-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
-.total-stat{display:flex;flex-direction:column}
-.total-stat-label{font-size:0.68rem;color:#9b6bb5;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px}
-.total-stat-value{font-size:1rem;font-weight:700;color:#5b2d8e}
-.monitor-list{display:grid;gap:8px}
-.monitor-item{display:flex;align-items:center;justify-content:space-between;background:#f5f4f2;border:1px solid #e8e6e2;border-radius:8px;padding:10px 14px}
-.monitor-name{font-size:0.88rem;font-weight:600;color:#1a1a1a}
-.monitor-right{display:flex;align-items:center;gap:10px}
-.monitor-ms{font-size:0.75rem;color:#888}
-.monitor-badge{font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:20px}
-.monitor-badge.online{background:#e8f8ee;color:#1a7a3e}
-.monitor-badge.offline{background:#fdecea;color:#c0392b}
-.accordion{border:1px solid #e8e6e2;border-radius:12px;overflow:hidden;background:#fff}
-.accordion-header{padding:18px 24px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700;color:#2d7d7d;font-size:1rem;user-select:none;background:#fff}
-.accordion-header:hover{background:#f5f4f2}
-.accordion-arrow{font-size:0.85rem;color:#888;transition:transform 0.2s}
-.accordion-arrow.open{transform:rotate(180deg)}
-.accordion-body{display:none;padding:0 24px 24px 24px;border-top:1px solid #e8e6e2}
-.accordion-body.open{display:block}
-.project-desc{font-size:0.88rem;color:#555;line-height:1.75;margin-bottom:16px;margin-top:16px}
-.project-details{margin-bottom:16px;padding-left:0;list-style:none}
-.project-details li{font-size:0.85rem;color:#555;padding:3px 0;display:flex;align-items:flex-start;gap:8px}
-.project-details li::before{content:'';width:5px;height:5px;background:#2d7d7d;border-radius:50%;flex-shrink:0;margin-top:7px}
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{background:#f5f4f2;border:1px solid #e8e6e2;color:#555;font-size:0.75rem;padding:4px 10px;border-radius:6px;font-family:monospace}
-.coming-soon{background:#f5f4f2;border:1px dashed #ccc;border-radius:12px;padding:24px;text-align:center;color:#888;font-size:0.85rem}
-footer{text-align:center;padding:24px;font-size:0.77rem;color:#888}
-footer span{color:#2d7d7d}
-.chat-fab{position:fixed;bottom:28px;right:28px;width:56px;height:56px;background:#2d7d7d;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.15);z-index:1000;transition:transform 0.2s}
-.chat-fab:hover{transform:scale(1.08)}
-.chat-fab svg{width:26px;height:26px;fill:white}
-.chat-window{position:fixed;bottom:96px;right:28px;width:340px;height:480px;background:#fff;border:1px solid #e8e6e2;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:999;display:none;flex-direction:column;overflow:hidden}
-.chat-window.open{display:flex}
-.chat-header{background:#2d7d7d;color:white;padding:14px 18px;font-weight:700;font-size:0.9rem;display:flex;justify-content:space-between;align-items:center}
-.chat-close{cursor:pointer;font-size:1.2rem;line-height:1}
-.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f5f4f2}
-.chat-input-row{display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid #e8e6e2}
-.chat-input-row input{flex:1;padding:8px 12px;border:1px solid #e8e6e2;border-radius:8px;font-size:0.85rem;background:#fff;color:#1a1a1a}
-.chat-input-row button{padding:8px 14px;background:#2d7d7d;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:600}
-.chat-bubble-user{align-self:flex-end;background:#2d7d7d;color:white;padding:8px 14px;border-radius:12px 12px 2px 12px;font-size:0.83rem;max-width:85%}
-.chat-bubble-bot{align-self:flex-start;background:#fff;border:1px solid #e8e6e2;padding:8px 14px;border-radius:12px 12px 12px 2px;font-size:0.83rem;max-width:85%;color:#1a1a1a;line-height:1.6}
-@media(max-width:600px){
-  h1{font-size:1.8rem}
-  .header-inner{padding:0 16px}
-  main{padding:0 16px 100px 16px}
-  .card{padding:16px}
-  .status-grid{grid-template-columns:1fr 1fr}
-  .total-grid{grid-template-columns:1fr 1fr}
-  .accordion-header{padding:14px 16px}
-  .accordion-body{padding:0 16px 16px 16px}
-  .chat-window{width:calc(100vw - 32px);right:16px}
-  .logout-bar{top:12px;right:16px}
-}
-</style>
+<title>Ayman El-Toufaili – Pi Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-<div class="header">
-  <div class="header-inner">
-    <div class="logout-bar">
-      <span class="logout-user" id="welcome"></span>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-    <h1>Ayman El-Toufaili</h1>
-    <div class="meta">Umschüler zum IT-System-Elektroniker seit August 2025 &nbsp;·&nbsp; Self-hosted Raspberry Pi Dashboard &nbsp;·&nbsp; <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank">GitHub Repository</a></div>
-    <div class="badges">
-      <span class="badge teal">Praktikum ab September 2026</span>
-      <span class="badge">Helpdesk &amp; Support</span>
-      <span class="badge">Netzwerktechnik</span>
-      <span class="badge">Systemadministration</span>
-    </div>
-  </div>
-</div>
-<main>
+<body class="dark">
 
-  <div class="card">
-    <div class="card-title">System Monitor</div>
-    <div class="live-dot">Live – Raspberry Pi 4, Marl</div>
-    <div class="card-subtitle">Server Status</div>
-    <div class="status-grid">
-      <div class="status-item"><div class="status-label">Uptime</div><div class="status-value green" id="uptime">–</div></div>
-      <div class="status-item"><div class="status-label">CPU Temp</div><div class="status-value" id="temp">–</div></div>
-      <div class="status-item"><div class="status-label">CPU Load</div><div class="status-value" id="cpu">–</div></div>
-      <div class="status-item"><div class="status-label">RAM</div><div class="status-value" id="ram">–</div></div>
-      <div class="status-item"><div class="status-label">Webserver</div><div class="status-value green">nginx ✓</div></div>
-    </div>
-    <hr class="divider">
-    <div class="card-subtitle">Energie &amp; Kosten</div>
-    <div class="status-grid">
-      <div class="status-item energy-item"><div class="status-label">Verbrauch</div><div class="status-value" id="watt">–</div></div>
-      <div class="status-item energy-item"><div class="status-label">Kosten / Tag</div><div class="status-value" id="cost_day">–</div></div>
-      <div class="status-item energy-item"><div class="status-label">Kosten / Monat</div><div class="status-value" id="cost_month">–</div></div>
-      <div class="status-item energy-item"><div class="status-label">CO₂ / Tag</div><div class="status-value" id="co2">–</div></div>
-    </div>
-    <p class="status-note">* Geschätzter Verbrauch basierend auf CPU Last. Strompreis: 0,30 €/kWh.</p>
-    <hr class="divider">
-    <div class="total-bar">
-      <div class="total-bar-header">
-        Gesamtstatistik seit Inbetriebnahme
-        <span class="total-bar-since" id="total-since">wird geladen...</span>
-      </div>
-      <div class="total-grid">
-        <div class="total-stat"><span class="total-stat-label">Gesamtlaufzeit</span><span class="total-stat-value" id="total-runtime">–</span></div>
-        <div class="total-stat"><span class="total-stat-label">Gesamtverbrauch</span><span class="total-stat-value" id="total-kwh">–</span></div>
-        <div class="total-stat"><span class="total-stat-label">Gesamtkosten</span><span class="total-stat-value" id="total-cost">–</span></div>
-        <div class="total-stat"><span class="total-stat-label">CO₂ gesamt</span><span class="total-stat-value" id="total-co2">–</span></div>
-      </div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-avatar">AE</div>
+    <div>
+      <div class="sidebar-name">Ayman El-Toufaili</div>
+      <div class="sidebar-role" data-de="IT-Systemelektroniker" data-en="IT Systems Engineer">IT-Systemelektroniker</div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Pi-hole – Netzwerk Werbeblocker</div>
-    <div class="live-dot">Live – alle 30 Sekunden</div>
-    <div class="status-grid" style="margin-bottom:4px;align-items:stretch;">
-      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Anfragen heute</div><div class="status-value" id="ph-total">–</div></div>
-      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Geblockt</div><div class="status-value" id="ph-blocked">–</div></div>
-      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Prozent</div><div class="status-value green" id="ph-percent">–</div></div>
-      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Blockliste</div><div class="status-value" id="ph-gravity">–</div></div>
-      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Aktive Clients</div><div class="status-value" id="ph-clients">–</div></div>
-      <div class="status-item" style="display:flex;flex-direction:column;justify-content:space-between;"><div class="status-label">Cache Treffer</div><div class="status-value" id="ph-cache">–</div></div>
-    </div>
-    <p class="status-note">* Pi-hole filtert DNS-Anfragen im gesamten Heimnetz.</p>
+  <div class="sidebar-status">
+    <span class="pulse-dot"></span>
+    <span class="sidebar-status-text" data-de="Pi online · Marl, NRW" data-en="Pi online · Marl, NRW">Pi online · Marl, NRW</span>
   </div>
 
-    <div class="card">
-    <div class="card-title">Service Monitor</div>
-    <div class="live-dot">Live – alle 30 Sekunden</div>
-    <div class="monitor-list" id="monitor-list">
-      <div style="color:#888;font-size:0.85rem;">wird geladen...</div>
-    </div>
-    <p class="status-note">* Überwacht Erreichbarkeit von Services und Netzwerkdiensten.</p>
-  </div>
+  <nav class="sidebar-nav">
+    <a href="#system" class="nav-link active">
+      <span class="nav-icon">◈</span>
+      <span data-de="System" data-en="System">System</span>
+    </a>
+    <a href="#energy" class="nav-link">
+      <span class="nav-icon">◉</span>
+      <span data-de="Energie" data-en="Energy">Energie</span>
+    </a>
+    <a href="#pihole" class="nav-link">
+      <span class="nav-icon">◎</span>
+      <span data-de="Pi-hole" data-en="Pi-hole">Pi-hole</span>
+    </a>
+    <a href="#projects" class="nav-link">
+      <span class="nav-icon">◇</span>
+      <span data-de="Projekte" data-en="Projects">Projekte</span>
+    </a>
+  </nav>
 
-  <div class="accordion">
-    <div class="accordion-header" onclick="toggleAccordion('p1')">
-      Projekt 1 – Raspberry Pi Heimserver
-      <span class="accordion-arrow" id="arrow-p1">▼</span>
+  <div class="sidebar-footer">
+    <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank" class="github-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+
+    <div class="sidebar-controls">
+      <button class="ctrl-btn" id="lang-toggle" title="Sprache wechseln">DE/EN</button>
+      <button class="ctrl-btn" id="dark-toggle" title="Dark Mode">◑</button>
     </div>
-    <div class="accordion-body" id="p1">
-      <p class="project-desc">Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux (Raspberry Pi OS). Der Server ist öffentlich erreichbar über DuckDNS mit Portweiterleitung über eine Fritz!Box 7560.</p>
-      <ul class="project-details">
-        <li>nginx als Webserver installiert und konfiguriert</li>
-        <li>Python REST-API entwickelt – liefert Live-Systemdaten (CPU, RAM, Temperatur)</li>
-        <li>nginx als Reverse Proxy eingerichtet – API über /api/status erreichbar</li>
-        <li>DuckDNS eingerichtet mit automatischem IP-Update via Cronjob alle 5 Minuten</li>
-        <li>Portweiterleitung (Port 80) in der Fritz!Box konfiguriert</li>
-        <li>Alle Dienste als systemd-Services eingerichtet – starten automatisch nach Neustart</li>
-        <li>Firewall (UFW) und Fail2ban für SSH-Schutz eingerichtet</li>
-        <li>SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv</li>
-      </ul>
-      <div class="tags">
-        <span class="tag">Raspberry Pi 4</span><span class="tag">Linux</span><span class="tag">nginx</span><span class="tag">Python</span><span class="tag">Bash</span><span class="tag">systemd</span><span class="tag">DuckDNS</span><span class="tag">SSH</span><span class="tag">Fritz!Box</span><span class="tag">REST API</span><span class="tag">UFW</span><span class="tag">Fail2ban</span><span class="tag">Let's Encrypt</span>
+
+    <div class="sidebar-badge">
+      <span data-de="Praktikum ab Sept. 2026" data-en="Internship from Sept. 2026">Praktikum ab Sept. 2026</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- HEADER -->
+  <header class="page-header">
+    <div>
+      <h1 class="page-title" data-de="Raspberry Pi Control Center" data-en="Raspberry Pi Control Center">Raspberry Pi Control Center</h1>
+    <p class="page-sub"><span data-de="Self-hosted Heimserver" data-en="Self-hosted Home Server">Self-hosted Heimserver</span><br><span>Raspberry Pi 4 · Marl, NRW</span></p>
+    <div class="mobile-info">
+      <span class="mobile-info-name">Ayman El-Toufaili · <span data-de="IT-Systemelektroniker" data-en="IT Systems Engineer">IT-Systemelektroniker</span></span>
+      <div class="mobile-info-controls">
+        <button class="ctrl-btn" id="lang-toggle-mobile">DE/EN</button>
+        <button class="ctrl-btn" id="dark-toggle-mobile">◑</button>
+        <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank" class="ctrl-btn" style="text-decoration:none;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a>
       </div>
     </div>
-  </div>
-
-  <div class="accordion">
-    <div class="accordion-header" onclick="toggleAccordion('p2')">
-      Projekt 2 – Energie-Monitoring
-      <span class="accordion-arrow" id="arrow-p2">▼</span>
     </div>
-    <div class="accordion-body" id="p2">
-      <p class="project-desc">Live-Überwachung des Stromverbrauchs des Raspberry Pi Servers. Berechnung der geschätzten Energiekosten und CO₂-Emissionen in Echtzeit – relevant für Green IT und nachhaltige IT-Infrastruktur.</p>
-      <ul class="project-details">
-        <li>Stromverbrauch-Schätzung basierend auf CPU Last in Python implementiert</li>
-        <li>Kostenberechnung basierend auf aktuellem deutschen Strompreis (0,30 €/kWh)</li>
-        <li>CO₂-Emissionen berechnet basierend auf deutschem Strommix</li>
-        <li>REST API Endpunkt /api/power erstellt</li>
-        <li>Gesamtstatistik wird persistent in energy_log.json gespeichert – bleibt nach Neustart erhalten</li>
-        <li>REST API Endpunkt /api/energy_total liefert kumulierte Werte seit Inbetriebnahme</li>
-      </ul>
-      <div class="tags">
-        <span class="tag">Python</span><span class="tag">REST API</span><span class="tag">Green IT</span><span class="tag">JavaScript</span><span class="tag">Energieeffizienz</span><span class="tag">JSON</span>
+    <div class="logout-area">
+      <span class="logged-as" id="welcome"></span>
+      <button class="logout-btn" onclick="logout()" data-de="Abmelden" data-en="Logout">Abmelden</button>
+    </div>
+  </header>
+
+  <!-- SYSTEM SECTION -->
+  <section id="system">
+    <div class="section-label" data-de="LIVE · aktualisiert jede Sekunde" data-en="LIVE · updates every second">LIVE · aktualisiert jede Sekunde</div>
+
+    <div class="metrics-grid">
+      <div class="metric-card accent">
+        <div class="metric-label" data-de="CPU Last" data-en="CPU Load">CPU Last</div>
+        <div class="metric-value mono" id="cpu">–</div>
+        <div class="metric-bar"><div class="metric-bar-fill" id="cpu-bar"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" data-de="Temperatur" data-en="Temperature">Temperatur</div>
+        <div class="metric-value mono" id="temp">–</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">RAM</div>
+        <div class="metric-value mono" id="ram">–</div>
+        <div class="metric-bar"><div class="metric-bar-fill" id="ram-bar"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Uptime</div>
+        <div class="metric-value mono" id="uptime">–</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="accordion">
-    <div class="accordion-header" onclick="toggleAccordion('p3')">
-      Projekt 3 – IT-Helpdesk Bot
-      <span class="accordion-arrow" id="arrow-p3">▼</span>
-    </div>
-    <div class="accordion-body" id="p3">
-      <p class="project-desc">KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3). Der Bot merkt sich den Gesprächsverlauf und kann auf vorherige Fragen eingehen.</p>
-      <ul class="project-details">
-        <li>Python Backend entwickelt – verarbeitet Anfragen und kommuniziert mit Groq API</li>
-        <li>LLaMA 3 Modell via Groq API integriert – antwortet auf IT-Fragen auf Deutsch</li>
-        <li>Gesprächsgedächtnis implementiert – Bot erinnert sich an den Verlauf</li>
-        <li>REST API Endpunkt /api/chat erstellt</li>
-        <li>nginx Reverse Proxy für den Bot konfiguriert</li>
-        <li>Als systemd-Service eingerichtet – startet automatisch</li>
-        <li>Floating Chat-Widget in die Website eingebaut</li>
-      </ul>
-      <div class="tags">
-        <span class="tag">Python</span><span class="tag">Groq API</span><span class="tag">LLaMA 3</span><span class="tag">REST API</span><span class="tag">JavaScript</span><span class="tag">nginx</span><span class="tag">systemd</span>
+  <!-- ENERGY SECTION -->
+  <section id="energy">
+    <div class="section-label" data-de="ENERGIE · seit Inbetriebnahme" data-en="ENERGY · since deployment">ENERGIE · seit Inbetriebnahme</div>
+
+    <div class="card energy-card">
+      <div class="energy-header">
+        <div class="energy-title" data-de="Gesamtstatistik" data-en="Total Statistics">Gesamtstatistik</div>
+        <div class="energy-since"><span data-de="seit" data-en="since">seit</span> <span id="total-since">–</span></div>
+      </div>
+      <div class="metrics-grid four-col">
+        <div class="stat-block">
+          <div class="stat-label" data-de="Gesamtlaufzeit" data-en="Total Uptime">Gesamtlaufzeit</div>
+          <div class="stat-value mono" id="total-runtime">–</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label" data-de="Verbrauch" data-en="Consumption">Verbrauch</div>
+          <div class="stat-value mono" id="total-kwh">–</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label" data-de="Kosten gesamt" data-en="Total Cost">Kosten gesamt</div>
+          <div class="stat-value mono" id="total-cost">–</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-label">CO₂</div>
+          <div class="stat-value mono" id="total-co2">–</div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="accordion">
-    <div class="accordion-header" onclick="toggleAccordion('p4')">
-      Projekt 4 – Service Monitor
-      <span class="accordion-arrow" id="arrow-p4">▼</span>
-    </div>
-    <div class="accordion-body" id="p4">
-      <p class="project-desc">Automatische Überwachung von Services und Netzwerkdiensten in Echtzeit. Der Monitor prüft alle 30 Sekunden ob Webservices, DNS, systemd-Services und das SSL-Zertifikat erreichbar und aktiv sind – wie es in professionellen IT-Umgebungen eingesetzt wird.</p>
-      <ul class="project-details">
-        <li>HTTP-Check für externe Dienste (Website, Internet)</li>
-        <li>DNS-Erreichbarkeit prüfen (1.1.1.1)</li>
-        <li>systemd-Services live überwachen (nginx, pi-api, pi-helpdesk)</li>
-        <li>SSL-Zertifikat Gültigkeit prüfen</li>
-        <li>Antwortzeiten in Millisekunden messen</li>
-        <li>REST API Endpunkt /api/monitor erstellt</li>
-        <li>Live-Dashboard mit farbigen Status-Badges</li>
-      </ul>
-      <div class="tags">
-        <span class="tag">Python</span><span class="tag">REST API</span><span class="tag">Monitoring</span><span class="tag">systemd</span><span class="tag">SSL</span><span class="tag">HTTP</span><span class="tag">DNS</span>
+  <!-- PIHOLE SECTION -->
+  <section id="pihole">
+    <div class="section-label" data-de="PI-HOLE · DNS Werbeblocker · ganzes Netzwerk" data-en="PI-HOLE · DNS Ad Blocker · entire network">PI-HOLE · DNS Werbeblocker · ganzes Netzwerk</div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label" data-de="Anfragen heute" data-en="Queries today">Anfragen heute</div>
+        <div class="metric-value mono" id="ph-total">–</div>
+      </div>
+      <div class="metric-card accent-green">
+        <div class="metric-label" data-de="Geblockt" data-en="Blocked">Geblockt</div>
+        <div class="metric-value mono" id="ph-blocked">–</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" data-de="Blockrate" data-en="Block Rate">Blockrate</div>
+        <div class="metric-value mono" id="ph-percent">–</div>
+        <div class="metric-bar"><div class="metric-bar-fill green" id="ph-bar"></div></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" data-de="Blockliste" data-en="Blocklist">Blockliste</div>
+        <div class="metric-value mono small" id="ph-gravity">–</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" data-de="Aktive Clients" data-en="Active Clients">Aktive Clients</div>
+        <div class="metric-value mono" id="ph-clients">–</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label" data-de="Cache Treffer" data-en="Cache Hits">Cache Treffer</div>
+        <div class="metric-value mono" id="ph-cache">–</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="accordion">
-    <div class="accordion-header" onclick="toggleAccordion('p5')">
-      Projekt 5 – Authentifizierung & Login
-      <span class="accordion-arrow" id="arrow-p5">▼</span>
-    </div>
-    <div class="accordion-body" id="p5">
-      <p class="project-desc">Eigenes Authentifizierungssystem mit JWT-Tokens. Das Dashboard ist durch eine Login-Seite geschützt — Benutzer erhalten nach erfolgreicher Anmeldung einen Token der im Browser gespeichert wird.</p>
-      <ul class="project-details">
-        <li>Python Auth-Service entwickelt (Port 5002, nur localhost)</li>
-        <li>JWT-Tokens für sichere Session-Verwaltung implementiert</li>
-        <li>Zwei Benutzerrollen: Admin und Demo (für Recruiter)</li>
-        <li>Login-Seite im Dashboard-Design erstellt</li>
-        <li>Token-Verifizierung bei jedem Seitenaufruf</li>
-        <li>Logout-Funktion mit Token-Löschung</li>
-        <li>nginx Route /auth/ für Auth-Service konfiguriert</li>
-        <li>Als systemd-Service eingerichtet – startet automatisch</li>
-      </ul>
-      <div class="tags">
-        <span class="tag">Python</span><span class="tag">JWT</span><span class="tag">Authentication</span><span class="tag">nginx</span><span class="tag">JavaScript</span><span class="tag">systemd</span><span class="tag">Security</span>
+  <!-- PROJECTS SECTION -->
+  <section id="projects">
+    <div class="section-label" data-de="PROJEKTE · Portfolio" data-en="PROJECTS · Portfolio">PROJEKTE · Portfolio</div>
+
+    <div class="projects-list">
+
+      <div class="project-card">
+        <div class="project-header" onclick="toggleProject('p1')">
+          <div class="project-left">
+            <span class="project-num">01</span>
+            <div>
+              <div class="project-title" data-de="Raspberry Pi Heimserver" data-en="Raspberry Pi Home Server">Raspberry Pi Heimserver</div>
+              <div class="project-tags">
+                <span class="tag">nginx</span><span class="tag">Python</span><span class="tag">systemd</span><span class="tag">Linux</span>
+              </div>
+            </div>
+          </div>
+          <span class="project-arrow" id="arrow-p1">▼</span>
+        </div>
+        <div class="project-body" id="p1">
+          <p data-de="Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux. Öffentlich erreichbar über DuckDNS mit SSL und Portweiterleitung über eine Fritz!Box 7560." data-en="Built a complete home server on Raspberry Pi 4 running Linux. Publicly accessible via DuckDNS with SSL and port forwarding through a Fritz!Box 7560.">Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux. Öffentlich erreichbar über DuckDNS mit SSL und Portweiterleitung über eine Fritz!Box 7560.</p>
+          <ul>
+            <li data-de="nginx als Webserver und Reverse Proxy" data-en="nginx as web server and reverse proxy">nginx als Webserver und Reverse Proxy</li>
+            <li data-de="Python REST-API für Live-Systemdaten (CPU, RAM, Temperatur)" data-en="Python REST-API for live system data (CPU, RAM, Temperature)">Python REST-API für Live-Systemdaten (CPU, RAM, Temperatur)</li>
+            <li data-de="DuckDNS mit automatischem IP-Update via Cronjob alle 5 Minuten" data-en="DuckDNS with automatic IP update via cronjob every 5 minutes">DuckDNS mit automatischem IP-Update via Cronjob alle 5 Minuten</li>
+            <li data-de="SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv" data-en="SSL certificate with Let's Encrypt – HTTPS active">SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv</li>
+            <li data-de="Firewall (UFW) und Fail2ban für SSH-Schutz" data-en="Firewall (UFW) and Fail2ban for SSH protection">Firewall (UFW) und Fail2ban für SSH-Schutz</li>
+            <li data-de="Alle Dienste als systemd-Services mit Autostart" data-en="All services as systemd services with autostart">Alle Dienste als systemd-Services mit Autostart</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">Raspberry Pi 4</span><span class="tag">Linux</span><span class="tag">nginx</span><span class="tag">Python</span><span class="tag">Bash</span><span class="tag">systemd</span><span class="tag">DuckDNS</span><span class="tag">SSH</span><span class="tag">UFW</span><span class="tag">Fail2ban</span><span class="tag">Let's Encrypt</span>
+          </div>
+        </div>
       </div>
+
+      <div class="project-card">
+        <div class="project-header" onclick="toggleProject('p2')">
+          <div class="project-left">
+            <span class="project-num">02</span>
+            <div>
+              <div class="project-title" data-de="Energie-Monitoring" data-en="Energy Monitoring">Energie-Monitoring</div>
+              <div class="project-tags">
+                <span class="tag">Python</span><span class="tag">REST API</span><span class="tag">Green IT</span>
+              </div>
+            </div>
+          </div>
+          <span class="project-arrow" id="arrow-p2">▼</span>
+        </div>
+        <div class="project-body" id="p2">
+          <p data-de="Live-Überwachung des Stromverbrauchs des Raspberry Pi Servers. Berechnung der geschätzten Energiekosten und CO₂-Emissionen – relevant für Green IT und nachhaltige IT-Infrastruktur." data-en="Live monitoring of the Raspberry Pi server's power consumption. Calculation of estimated energy costs and CO₂ emissions – relevant for Green IT and sustainable IT infrastructure.">Live-Überwachung des Stromverbrauchs des Raspberry Pi Servers. Berechnung der geschätzten Energiekosten und CO₂-Emissionen – relevant für Green IT und nachhaltige IT-Infrastruktur.</p>
+          <ul>
+            <li data-de="Stromverbrauch-Schätzung basierend auf CPU Last" data-en="Power consumption estimate based on CPU load">Stromverbrauch-Schätzung basierend auf CPU Last</li>
+            <li data-de="Kostenberechnung basierend auf deutschem Strompreis (0,30 €/kWh)" data-en="Cost calculation based on German electricity price (€0.30/kWh)">Kostenberechnung basierend auf deutschem Strompreis (0,30 €/kWh)</li>
+            <li data-de="CO₂-Emissionen berechnet nach deutschem Strommix" data-en="CO₂ emissions calculated using German energy mix">CO₂-Emissionen berechnet nach deutschem Strommix</li>
+            <li data-de="Gesamtstatistik persistent in energy_log.json gespeichert" data-en="Total statistics persistently stored in energy_log.json">Gesamtstatistik persistent in energy_log.json gespeichert</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">REST API</span><span class="tag">Green IT</span><span class="tag">JSON</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header" onclick="toggleProject('p3')">
+          <div class="project-left">
+            <span class="project-num">03</span>
+            <div>
+              <div class="project-title" data-de="IT-Helpdesk Bot" data-en="IT Helpdesk Bot">IT-Helpdesk Bot</div>
+              <div class="project-tags">
+                <span class="tag">Groq API</span><span class="tag">LLaMA 3</span><span class="tag">Python</span>
+              </div>
+            </div>
+          </div>
+          <span class="project-arrow" id="arrow-p3">▼</span>
+        </div>
+        <div class="project-body" id="p3">
+          <p data-de="KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3). Der Bot merkt sich den Gesprächsverlauf." data-en="AI-powered helpdesk chatbot running on the Raspberry Pi that automatically answers IT questions. Built with Python and the Groq API (LLaMA 3). The bot remembers conversation history.">KI-gestützter Helpdesk Chatbot der auf dem Raspberry Pi läuft und IT-Fragen automatisch beantwortet. Entwickelt mit Python und der Groq API (LLaMA 3). Der Bot merkt sich den Gesprächsverlauf.</p>
+          <ul>
+            <li data-de="LLaMA 3 Modell via Groq API – antwortet auf IT-Fragen auf Deutsch" data-en="LLaMA 3 model via Groq API – answers IT questions in German">LLaMA 3 Modell via Groq API – antwortet auf IT-Fragen auf Deutsch</li>
+            <li data-de="Gesprächsgedächtnis implementiert" data-en="Conversation memory implemented">Gesprächsgedächtnis implementiert</li>
+            <li data-de="REST API Endpunkt /api/chat" data-en="REST API endpoint /api/chat">REST API Endpunkt /api/chat</li>
+            <li data-de="Floating Chat-Widget in die Website eingebaut" data-en="Floating chat widget integrated into the website">Floating Chat-Widget in die Website eingebaut</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">Groq API</span><span class="tag">LLaMA 3</span><span class="tag">REST API</span><span class="tag">JavaScript</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header" onclick="toggleProject('p4')">
+          <div class="project-left">
+            <span class="project-num">04</span>
+            <div>
+              <div class="project-title" data-de="JWT Authentifizierung" data-en="JWT Authentication">JWT Authentifizierung</div>
+              <div class="project-tags">
+                <span class="tag">JWT</span><span class="tag">Security</span><span class="tag">Python</span>
+              </div>
+            </div>
+          </div>
+          <span class="project-arrow" id="arrow-p4">▼</span>
+        </div>
+        <div class="project-body" id="p4">
+          <p data-de="Eigenes Authentifizierungssystem mit JWT-Tokens. Das Dashboard ist durch eine Login-Seite geschützt — Benutzer erhalten nach erfolgreicher Anmeldung einen Token der im Browser gespeichert wird." data-en="Custom authentication system with JWT tokens. The dashboard is protected by a login page — users receive a token after successful login that is stored in the browser.">Eigenes Authentifizierungssystem mit JWT-Tokens. Das Dashboard ist durch eine Login-Seite geschützt — Benutzer erhalten nach erfolgreicher Anmeldung einen Token der im Browser gespeichert wird.</p>
+          <ul>
+            <li data-de="Python Auth-Service entwickelt (Port 5002, nur localhost)" data-en="Python auth service developed (port 5002, localhost only)">Python Auth-Service entwickelt (Port 5002, nur localhost)</li>
+            <li data-de="JWT-Tokens für sichere Session-Verwaltung" data-en="JWT tokens for secure session management">JWT-Tokens für sichere Session-Verwaltung</li>
+            <li data-de="Zwei Benutzerrollen: Admin und Demo (für Recruiter)" data-en="Two user roles: Admin and Demo (for recruiters)">Zwei Benutzerrollen: Admin und Demo (für Recruiter)</li>
+            <li data-de="Token-Verifizierung bei jedem Seitenaufruf" data-en="Token verification on every page load">Token-Verifizierung bei jedem Seitenaufruf</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">JWT</span><span class="tag">Security</span><span class="tag">nginx</span><span class="tag">JavaScript</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header" onclick="toggleProject('p5')">
+          <div class="project-left">
+            <span class="project-num">05</span>
+            <div>
+              <div class="project-title" data-de="IT-Helpdesk Bot" data-en="Service Monitor">Service Monitor</div>
+              <div class="project-tags">
+                <span class="tag">Monitoring</span><span class="tag">Python</span><span class="tag">SSL</span>
+              </div>
+            </div>
+          </div>
+          <span class="project-arrow" id="arrow-p5">▼</span>
+        </div>
+        <div class="project-body" id="p5">
+          <p data-de="Automatische Überwachung von Services und Netzwerkdiensten in Echtzeit. Der Monitor prüft alle 30 Sekunden ob Webservices, DNS, systemd-Services und das SSL-Zertifikat erreichbar sind." data-en="Automatic real-time monitoring of services and network services. The monitor checks every 30 seconds whether web services, DNS, systemd services and the SSL certificate are reachable.">Automatische Überwachung von Services und Netzwerkdiensten in Echtzeit. Der Monitor prüft alle 30 Sekunden ob Webservices, DNS, systemd-Services und das SSL-Zertifikat erreichbar sind.</p>
+          <ul>
+            <li data-de="HTTP-Check für externe Dienste" data-en="HTTP check for external services">HTTP-Check für externe Dienste</li>
+            <li data-de="DNS-Erreichbarkeit prüfen (1.1.1.1)" data-en="DNS reachability check (1.1.1.1)">DNS-Erreichbarkeit prüfen (1.1.1.1)</li>
+            <li data-de="systemd-Services live überwachen" data-en="Live monitoring of systemd services">systemd-Services live überwachen</li>
+            <li data-de="SSL-Zertifikat Gültigkeit prüfen" data-en="SSL certificate validity check">SSL-Zertifikat Gültigkeit prüfen</li>
+            <li data-de="Antwortzeiten in Millisekunden messen" data-en="Response time measurement in milliseconds">Antwortzeiten in Millisekunden messen</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">Python</span><span class="tag">Monitoring</span><span class="tag">systemd</span><span class="tag">SSL</span><span class="tag">DNS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header" onclick="toggleProject('p6')">
+          <div class="project-left">
+            <span class="project-num">06</span>
+            <div>
+              <div class="project-title" data-de="Pi-hole Netzwerk-Werbeblocker" data-en="Pi-hole Network Ad Blocker">Pi-hole Netzwerk-Werbeblocker</div>
+              <div class="project-tags">
+                <span class="tag">Pi-hole</span><span class="tag">DNS</span><span class="tag">Netzwerk</span>
+              </div>
+            </div>
+          </div>
+          <span class="project-arrow" id="arrow-p6">▼</span>
+        </div>
+        <div class="project-body" id="p6">
+          <p data-de="Netzwerkweiter Werbeblocker auf DNS-Ebene. Pi-hole filtert Werbung und Tracking für alle Geräte im Heimnetz — Laptops, Smartphones, Smart-TVs — ohne dass auf jedem Gerät etwas installiert werden muss." data-en="Network-wide ad blocker at DNS level. Pi-hole filters ads and tracking for all devices on the home network — laptops, smartphones, smart TVs — without installing anything on each device.">Netzwerkweiter Werbeblocker auf DNS-Ebene. Pi-hole filtert Werbung und Tracking für alle Geräte im Heimnetz — Laptops, Smartphones, Smart-TVs — ohne dass auf jedem Gerät etwas installiert werden muss.</p>
+          <ul>
+            <li data-de="Pi-hole installiert und konfiguriert" data-en="Pi-hole installed and configured">Pi-hole installiert und konfiguriert</li>
+            <li data-de="Port-Konflikt mit nginx gelöst – Pi-hole auf Port 8080" data-en="Port conflict with nginx resolved – Pi-hole on port 8080">Port-Konflikt mit nginx gelöst – Pi-hole auf Port 8080</li>
+            <li data-de="Fritz!Box DNS auf Pi-hole umgestellt mit Fallback" data-en="Fritz!Box DNS switched to Pi-hole with fallback">Fritz!Box DNS auf Pi-hole umgestellt mit Fallback</li>
+            <li data-de="Über 242.000 Domains auf der Blockliste" data-en="Over 242,000 domains on the blocklist">Über 242.000 Domains auf der Blockliste</li>
+            <li data-de="Pi-hole API über nginx Reverse Proxy erreichbar" data-en="Pi-hole API accessible via nginx reverse proxy">Pi-hole API über nginx Reverse Proxy erreichbar</li>
+            <li data-de="Live-Stats im Dashboard integriert" data-en="Live stats integrated in dashboard">Live-Stats im Dashboard integriert</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">Pi-hole</span><span class="tag">DNS</span><span class="tag">nginx</span><span class="tag">UFW</span><span class="tag">Fritz!Box</span><span class="tag">Security</span>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </section>
+
+  <div class="mobile-logout">
+    <button class="logout-btn" onclick="logout()" data-de="Abmelden" data-en="Logout">Abmelden</button>
   </div>
 
-  <div class="accordion">
-  <div class="accordion-header" onclick="toggleAccordion('p6')">
-    Projekt 6 – Pi-hole Netzwerk-Werbeblocker
-    <span class="accordion-arrow" id="arrow-p6">▼</span>
-  </div>
-  <div class="accordion-body" id="p6">
-    <p class="project-desc">Netzwerkweiter Werbeblocker auf DNS-Ebene. Pi-hole filtert Werbung und Tracking für alle Geräte im Heimnetz — Laptops, Smartphones, Smart-TVs — ohne dass auf jedem Gerät etwas installiert werden muss.</p>
-    <ul class="project-details">
-      <li>Pi-hole auf Raspberry Pi installiert und konfiguriert</li>
-      <li>Port-Konflikt mit nginx gelöst — Pi-hole FTL auf Port 8080 umgezogen</li>
-      <li>UFW Firewall für Port 53 und 8080 im Heimnetz freigegeben</li>
-      <li>Fritz!Box DNS auf Pi-hole umgestellt — ganzes Netzwerk gefiltert</li>
-      <li>Fallback DNS konfiguriert — Internet bleibt online wenn Pi aus ist</li>
-      <li>DNS-Rebind-Schutz für eigene Domain eingetragen</li>
-      <li>Zusätzliche Blocklisten hinzugefügt — über 242.000 Domains geblockt</li>
-      <li>Pi-hole API über nginx Reverse Proxy erreichbar</li>
-      <li>Live-Stats Card im Dashboard integriert</li>
-    </ul>
-    <div class="tags">
-      <span class="tag">Pi-hole</span><span class="tag">DNS</span><span class="tag">nginx</span><span class="tag">UFW</span><span class="tag">Fritz!Box</span><span class="tag">Netzwerk</span><span class="tag">Security</span><span class="tag">Linux</span><span class="tag">REST API</span>
-    </div>
-  </div>
-</div>
+  <footer class="page-footer">
+    <span data-de="Gehostet auf eigenem Raspberry Pi 4 · " data-en="Self-hosted on Raspberry Pi 4 · ">Gehostet auf eigenem Raspberry Pi 4 · </span><span style="color:var(--accent)">Ayman El-Toufaili</span>
+  </footer>
 
-  <div class="coming-soon">Weitere Projekte folgen ...</div>
 </main>
 
-<footer>Gehostet auf eigenem Raspberry Pi · <span>Ayman El-Toufaili</span></footer>
-
-<div class="chat-fab" onclick="toggleChat()">
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+<!-- CHAT WIDGET -->
+<div class="chat-fab" onclick="toggleChat()" title="IT-Helpdesk Bot">
+  <svg viewBox="0 0 24 24" fill="white" width="22" height="22">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
   </svg>
 </div>
 
 <div class="chat-window" id="chat-window">
   <div class="chat-header">
-    IT-Helpdesk Bot
-    <span class="chat-close" onclick="toggleChat()">✕</span>
+    <div>
+      <div class="chat-title" data-de="IT-Helpdesk Bot" data-en="IT Helpdesk Bot">IT-Helpdesk Bot</div>
+      <div class="chat-sub" data-de="Powered by LLaMA 3 · Groq" data-en="Powered by LLaMA 3 · Groq">Powered by LLaMA 3 · Groq</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
   </div>
   <div class="chat-messages" id="chat-messages"></div>
   <div class="chat-input-row">
-    <input id="chat-input" type="text" placeholder="IT-Frage stellen...">
-    <button onclick="sendMessage()">Senden</button>
+    <input id="chat-input" type="text" placeholder="IT-Frage stellen..." autocomplete="off">
+    <button onclick="sendMessage()" data-de="Senden" data-en="Send">Senden</button>
   </div>
 </div>
 
-<script>
-const token = localStorage.getItem("token");
-if (!token) { window.location.href = "/login.html"; }
-
-function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  window.location.href = "/login.html";
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-  const user = localStorage.getItem("user");
-  if (user) {
-    document.getElementById("welcome").textContent = "Eingeloggt als: " + user;
-  }
-  document.getElementById("chat-input").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") sendMessage();
-  });
-});
-
-function toggleAccordion(id) {
-  const body = document.getElementById(id);
-  const arrow = document.getElementById("arrow-" + id);
-  body.classList.toggle("open");
-  arrow.classList.toggle("open");
-}
-
-function toggleChat() {
-  const win = document.getElementById("chat-window");
-  win.classList.toggle("open");
-}
-
-async function loadStatus() {
-  try {
-    const res = await fetch("/api/status");
-    const data = await res.json();
-    document.getElementById("temp").textContent = data.temp + " °C";
-    document.getElementById("cpu").textContent = data.cpu_load;
-    document.getElementById("ram").textContent = data.ram_used + " / " + data.ram_total + " MB";
-  } catch {
-    document.getElementById("temp").textContent = "API offline";
-    document.getElementById("cpu").textContent = "–";
-    document.getElementById("ram").textContent = "–";
-  }
-  try {
-    const up = await fetch("/api/uptime");
-    const u = await up.json();
-    document.getElementById("uptime").textContent = u.uptime;
-  } catch {
-    document.getElementById("uptime").textContent = "–";
-  }
-  try {
-    const res = await fetch("/api/power");
-    const data = await res.json();
-    document.getElementById("watt").textContent = data.watt + " W";
-    document.getElementById("cost_day").textContent = data.cost_per_day + " €";
-    document.getElementById("cost_month").textContent = data.cost_per_month + " €";
-    document.getElementById("co2").textContent = data.co2_per_day + " kg";
-  } catch {
-    document.getElementById("watt").textContent = "–";
-  }
-}
-
-async function loadTotals() {
-  try {
-    const res = await fetch("/api/energy_total");
-    const data = await res.json();
-    const parts = data.runtime.split(":");
-    const days = parseInt(parts[0]);
-    const hours = parseInt(parts[1]);
-    const mins = parseInt(parts[2]);
-    let rt = "";
-    if (days > 0) rt += days + "T ";
-    if (days > 0 || hours > 0) rt += hours + "Std. ";
-    rt += mins + "Min.";
-    document.getElementById("total-runtime").textContent = rt.trim();
-    document.getElementById("total-kwh").textContent = data.total_kwh + " kWh";
-    document.getElementById("total-cost").textContent = data.total_cost + " €";
-    const co2_grams = Math.round(data.total_co2 * 1000 * 10) / 10;
-    document.getElementById("total-co2").textContent = co2_grams + " g CO₂";
-    document.getElementById("total-since").textContent = "seit " + data.start_date;
-  } catch {
-    document.getElementById("total-runtime").textContent = "–";
-  }
-}
-
-async function loadMonitor() {
-  try {
-    const res = await fetch("/api/monitor");
-    const data = await res.json();
-    const list = document.getElementById("monitor-list");
-    list.innerHTML = data.services.map(s => `
-      <div class="monitor-item">
-        <span class="monitor-name">${s.name}</span>
-        <div class="monitor-right">
-          ${s.ms ? `<span class="monitor-ms">${s.ms}ms</span>` : ""}
-          ${s.info ? `<span class="monitor-ms">${s.info}</span>` : ""}
-          <span class="monitor-badge ${s.status}">${s.status === "online" ? "Online" : "Offline"}</span>
-        </div>
-      </div>
-    `).join("");
-  } catch {
-    document.getElementById("monitor-list").innerHTML = "<div style='color:#888;font-size:0.85rem;'>Monitor offline</div>";
-  }
-}
-
-setInterval(loadStatus, 1000);
-setInterval(loadTotals, 60000);
-setInterval(loadMonitor, 30000);
-
-let piholeToken = null;
-
-async function getPiholeToken() {
-  try {
-    const res = await fetch("/pihole-api/auth", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({password: "p0cQP-lW"})
-    });
-    const data = await res.json();
-    if (data.session && data.session.valid) {
-      piholeToken = data.session.sid;
-    }
-  } catch {}
-}
-
-async function loadPihole() {
-  try {
-    if (!piholeToken) await getPiholeToken();
-    const res = await fetch("/pihole-api/stats/summary", {
-      headers: {"sid": piholeToken}
-    });
-    if (res.status === 401) {
-      piholeToken = null;
-      await getPiholeToken();
-      return;
-    }
-    const data = await res.json();
-    document.getElementById("ph-total").textContent = data.queries.total.toLocaleString();
-    document.getElementById("ph-blocked").textContent = data.queries.blocked.toLocaleString();
-    document.getElementById("ph-percent").textContent = data.queries.percent_blocked.toFixed(1) + " %";
-    document.getElementById("ph-gravity").textContent = data.gravity.domains_being_blocked.toLocaleString();
-    document.getElementById("ph-clients").textContent = data.clients.active;
-    document.getElementById("ph-cache").textContent = data.queries.cached.toLocaleString();
-  } catch {}
-}
-
-setInterval(loadPihole, 30000);
-loadPihole();
-loadStatus();
-loadTotals();
-loadMonitor();
-
-let chatHistory = [];
-
-async function sendMessage() {
-  const input = document.getElementById("chat-input");
-  const messages = document.getElementById("chat-messages");
-  const text = input.value.trim();
-  if (!text) return;
-  messages.innerHTML += `<div class="chat-bubble-user">${text}</div>`;
-  input.value = "";
-  messages.scrollTop = messages.scrollHeight;
-  messages.innerHTML += `<div class="chat-bubble-bot" id="typing">...</div>`;
-  chatHistory.push({"role": "user", "content": text});
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({messages: chatHistory})
-    });
-    const data = await res.json();
-    chatHistory.push({"role": "assistant", "content": data.reply});
-    const formatted = data.reply
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n(\d+\.)/g, '<br><br>$1')
-      .replace(/\n[-*] /g, '<br>• ')
-      .replace(/\n/g, '<br>');
-    document.getElementById("typing").outerHTML = `<div class="chat-bubble-bot">${formatted}</div>`;
-  } catch {
-    chatHistory.pop();
-    document.getElementById("typing").outerHTML = `<div class="chat-bubble-bot">Bot offline</div>`;
-  }
-  messages.scrollTop = messages.scrollHeight;
-}
-</script>
+<script src="script.js"></script>
 </body>
 </html>
