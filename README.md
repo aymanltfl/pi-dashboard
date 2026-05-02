@@ -144,6 +144,5 @@ Praktikum ab September 2026
 ## ⚙️ Hosting
 
 Gehostet auf einem eigenen Raspberry Pi 4 im Heimnetzwerk
-```
 
 ---
