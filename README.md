@@ -12,7 +12,7 @@ Demo-Zugang:
 
 ## Projektübersicht
 
-Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration, Service-Monitoring und Authentifizierung.
+Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration, Service-Monitoring, Authentifizierung und netzwerkweitem Werbeblocker.
 
 ---
 
@@ -58,6 +58,17 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 - Token-Verifizierung bei jedem Seitenaufruf
 - Logout-Funktion mit Token-Löschung
 
+### Projekt 6 - Pi-hole Netzwerk-Werbeblocker
+- Pi-hole auf Raspberry Pi installiert und konfiguriert
+- DNS-Filter für das gesamte Heimnetz (Laptops, Smartphones, Smart-TVs)
+- Port-Konflikt mit nginx gelöst - Pi-hole FTL auf Port 8080
+- UFW Firewall für Port 53 und 8080 im Heimnetz konfiguriert
+- Fritz!Box DNS auf Pi-hole umgestellt mit automatischem Fallback
+- DNS-Rebind-Schutz für eigene Domain eingetragen
+- Über 242.000 Domains auf der Blockliste
+- Pi-hole API über nginx Reverse Proxy erreichbar
+- Live-Stats Card im Dashboard integriert
+
 ---
 
 ## Technologien
@@ -68,7 +79,7 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 | Betriebssystem | Raspberry Pi OS (Debian Trixie) |
 | Webserver | nginx |
 | Backend | Python 3 |
-| DNS | DuckDNS |
+| DNS | DuckDNS, Pi-hole |
 | Security | UFW, Fail2ban, Let's Encrypt, JWT |
 | Remote Access | Tailscale VPN |
 | KI | Groq API, LLaMA 3 |
@@ -92,6 +103,8 @@ Raspberry Pi 4:
   - /api/energy_total --> Python API (nur localhost, Port 5000)
   - /api/monitor --> Python API (nur localhost, Port 5000)
   - /api/chat --> Helpdesk Bot (nur localhost, Port 5001)
+  - /pihole-api/ --> Pi-hole API (Port 8080)
+- Pi-hole FTL (DNS-Filter, Port 53 + 8080, nur Heimnetz)
 - Alle APIs binden nur auf 127.0.0.1 - kein direkter Internetzugriff
 - Tailscale VPN fuer sicheren Remote-Zugriff ohne offenen SSH-Port im Router
 - DuckDNS Cronjob (IP-Update alle 5 Minuten)
@@ -103,10 +116,11 @@ Raspberry Pi 4:
 - nginx als einziger oeffentlicher Entry Point
 - Alle APIs nur auf localhost gebunden (127.0.0.1)
 - JWT-Authentifizierung schuetzt das komplette Dashboard
-- UFW Firewall - nur Port 80, 443 offen
+- UFW Firewall - nur Port 80, 443 oeffentlich, Port 53/8080 nur Heimnetz
 - Fail2ban - automatische IP-Sperrung bei Brute-Force
 - SSL/TLS mit Let's Encrypt - automatische Erneuerung
 - Tailscale VPN fuer sicheren Remote-Zugriff
+- Pi-hole - DNS-basierter Schutz vor Tracking und Werbung
 
 ---
 
@@ -125,7 +139,7 @@ pi-dashboard/
 
 ## Autor
 
-Ayman
+Ayman El-Toufaili
 Umschüler zum IT-Systemelektroniker
 Praktikum ab September 2026 - Helpdesk, Netzwerktechnik, Systemadministration
 
