@@ -1,148 +1,138 @@
 # Raspberry Pi Home Server Dashboard
 
-Persönliches Home-Lab Projekt auf Basis eines Raspberry Pi 4 (Raspberry Pi OS).
+Persönliches Heimserver-Projekt auf Basis eines Raspberry Pi 4 unter Linux (Raspberry Pi OS).
 
-Live erreichbar unter:  
-https://aymanel-pi.duckdns.org
+Live erreichbar unter: https://aymanel-pi.duckdns.org
 
-Demo-Zugang (optional):  
-Benutzer: demo  
-Passwort: demo2026  
-
----
-
-## 📌 Projektübersicht
-
-Dieses Projekt ist ein vollständig selbst gehostetes Home-Server-System, das verschiedene IT- und Systemadministrations-Konzepte kombiniert:
-
-- Webserver & Reverse Proxy
-- REST APIs für Systemdaten
-- Netzwerk-Monitoring
-- Authentifizierungssystem
-- KI-gestützter Helpdesk Bot
-- DNS-basierter Werbeblocker
-- Remote-Zugriff via VPN
-
-Ziel des Projekts ist es, eine realistische IT-Infrastruktur im Heimnetz nachzubauen und zu betreiben.
+Demo-Zugang:
+- Benutzer: demo
+- Passwort: demo2026
 
 ---
 
-## 🚀 Features / Projekte
+## Projektübersicht
 
-### 🖥️ Raspberry Pi Home Server
-- Webserver mit Reverse Proxy (nginx)
-- Eigene REST API für Systemdaten (CPU, RAM, Temperatur, Uptime)
-- Dynamisches DNS über DuckDNS
-- Automatischer IP-Update Mechanismus
-- HTTPS mit Let's Encrypt
-- Systemdienste via systemd
-- Firewall-Schutz mit UFW
-- Schutz vor Brute-Force Angriffen (Fail2ban)
+Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration, Authentifizierung und netzwerkweitem Werbeblocker.
 
 ---
 
-### ⚡ Energie- & Systemmonitoring
-- Echtzeit Schätzung des Stromverbrauchs
-- Kostenberechnung basierend auf Strompreis
-- CO₂-Emissionen basierend auf Energieverbrauch
-- Speicherung historischer Systemdaten
+## Projekte
+
+### Projekt 1 - Raspberry Pi Heimserver
+- nginx als Webserver und Reverse Proxy konfiguriert
+- Python REST-API entwickelt (CPU, RAM, Temperatur, Uptime)
+- DuckDNS für dynamisches DNS eingerichtet (Cronjob alle 5 Min.)
+- Portweiterleitung über Fritz!Box 7560
+- SSL-Zertifikat mit Let's Encrypt (HTTPS)
+- Firewall mit UFW konfiguriert
+- Fail2ban für SSH-Schutz eingerichtet
+- Alle Dienste als systemd-Services (Autostart)
+
+### Projekt 2 - Energie-Monitoring
+- Stromverbrauch-Schätzung basierend auf CPU Last
+- Kostenberechnung (0,30 Euro/kWh)
+- CO2-Emissionen basierend auf deutschem Strommix
+- Gesamtstatistik persistent in energy_log.json gespeichert
+- REST API Endpunkt /api/energy_total
+
+### Projekt 3 - IT-Helpdesk Bot
+- KI-Chatbot mit Groq API (LLaMA 3)
+- Beantwortet IT-Fragen automatisch auf Deutsch
+- Gesprächsgedächtnis implementiert
+- Python Backend + REST API (/api/chat)
+- Floating Chat-Widget auf der Website
+
+### Projekt 4 - JWT Authentifizierung
+- Eigenes JWT-basiertes Authentifizierungssystem
+- Python Auth-Service (nur localhost)
+- Zwei Benutzerrollen: Admin und Demo
+- Login-Seite im Dashboard-Design
+- Token-Verifizierung bei jedem Seitenaufruf
+- Logout-Funktion mit Token-Löschung
+
+### Projekt 5 - Pi-hole Netzwerk-Werbeblocker
+- Pi-hole auf Raspberry Pi installiert und konfiguriert
+- DNS-Filter für das gesamte Heimnetz (Laptops, Smartphones, Smart-TVs)
+- Port-Konflikt mit nginx gelöst - Pi-hole FTL auf Port 8080
+- UFW Firewall für Port 53 und 8080 im Heimnetz konfiguriert
+- Fritz!Box DNS auf Pi-hole umgestellt mit automatischem Fallback
+- DNS-Rebind-Schutz für eigene Domain eingetragen
+- Über 242.000 Domains auf der Blockliste
+- Pi-hole API über nginx Reverse Proxy erreichbar
+- Live-Stats Card im Dashboard integriert
 
 ---
 
-### 🤖 IT Helpdesk Bot
-- KI-basierter Chatbot für IT-Support
-- Integration eines Large Language Models (Groq / LLaMA 3)
-- Kontextspeicher für Gesprächsverlauf
-- Webbasierte Chat-Oberfläche im Dashboard
+## Technologien
 
----
-
-### 🌐 Netzwerk-Werbeblocker (Pi-hole)
-- Netzwerkweiter DNS-Werbeblocker
-- Filterung von Werbung und Trackern für alle Geräte im Heimnetz
-- Zentrale Verwaltung über Webinterface
-- Anpassbare Blocklisten
-
----
-
-### 🔐 Authentifizierungssystem
-- JWT-basiertes Login-System
-- Geschütztes Dashboard
-- Zwei Benutzerrollen (Admin / Demo)
-- Session-Handling im Browser
-
----
-
-## 🧰 Technologien
-
-| Bereich | Technologie |
-|--------|------------|
-| Hardware | Raspberry Pi 4 |
-| OS | Raspberry Pi OS (Debian-based) |
+| Bereich | Tools |
+|---|---|
+| Hardware | Raspberry Pi 4 (2GB RAM) |
+| Betriebssystem | Raspberry Pi OS (Debian Trixie) |
 | Webserver | nginx |
 | Backend | Python 3 |
-| Frontend | HTML, CSS, JavaScript |
 | DNS | DuckDNS, Pi-hole |
-| Security | UFW, Fail2ban, Let's Encrypt |
-| Auth | JWT |
+| Security | UFW, Fail2ban, Let's Encrypt, JWT, Tailscale |
 | Remote Access | Tailscale VPN |
-| AI | Groq API / LLaMA 3 |
-| Deployment | systemd |
+| KI | Groq API, LLaMA 3 |
+| Versionskontrolle | Git, GitHub |
+| Prozessmanagement | systemd |
 
 ---
 
-## 🏗️ Architektur (vereinfacht)
+## Architektur
 
-Internet → Domain (DuckDNS) → nginx Reverse Proxy → interne Services
+Internet --> DuckDNS (aymanel-pi.duckdns.org) --> Fritz!Box 7560 (Port 443/80) --> Raspberry Pi 4
 
-Interne Services:
-- Web Dashboard
-- Authentication Service
-- System API
-- Helpdesk Bot
-- Pi-hole DNS Filter
-
-Alle Backend-Services laufen lokal auf dem Raspberry Pi und sind nicht direkt öffentlich erreichbar.
-
----
-
-## 🔐 Sicherheit
-
-- nginx als einziger öffentlicher Entry Point
-- interne APIs nur lokal erreichbar
-- JWT Authentifizierung für Dashboard Zugriff
-- Firewall (UFW) schützt Netzwerkzugänge
-- Fail2ban schützt gegen Brute-Force Angriffe
-- HTTPS Verschlüsselung für alle externen Verbindungen
-- Remote Zugriff ausschließlich über VPN (Tailscale)
+Raspberry Pi 4:
+- nginx (einziger oeffentlicher Entry Point, Port 443/80)
+  - / --> index.html (Login-geschuetzt)
+  - /login.html --> Login-Seite
+  - /auth/ --> Auth Service (nur localhost, Port 5002)
+  - /api/status --> Python API (nur localhost, Port 5000)
+  - /api/uptime --> Python API (nur localhost, Port 5000)
+  - /api/power --> Python API (nur localhost, Port 5000)
+  - /api/energy_total --> Python API (nur localhost, Port 5000)
+  - /api/chat --> Helpdesk Bot (nur localhost, Port 5001)
+  - /pihole-api/ --> Pi-hole API (Port 8080)
+- Pi-hole FTL (DNS-Filter, Port 53 + 8080, nur Heimnetz)
+- Alle APIs binden nur auf 127.0.0.1 - kein direkter Internetzugriff
+- Tailscale VPN fuer sicheren SSH-Zugriff (Port 22 nur ueber Tailscale)
+- DuckDNS Cronjob (IP-Update alle 5 Minuten)
 
 ---
 
-## 📁 Projektstruktur
+## Sicherheit
 
-Modular aufgebautes Home-Server-System:
-
-- Backend (Python REST APIs)
-- Frontend (Dashboard UI)
-- Auth Service (JWT Authentication)
-- Helpdesk Bot (AI Chat Integration)
-- Energy Monitoring Module
-- Pi-hole Integration
-- System Configuration (nginx, systemd, scripts)
-
+- nginx als einziger oeffentlicher Entry Point
+- Alle APIs nur auf localhost gebunden (127.0.0.1)
+- JWT-Authentifizierung schuetzt das komplette Dashboard
+- UFW Firewall - nur Port 80/443 oeffentlich, Port 53/8080 nur Heimnetz
+- SSH nur ueber Tailscale VPN erreichbar (Port 22 nicht oeffentlich)
+- Fail2ban - automatische IP-Sperrung bei Brute-Force
+- SSL/TLS mit Let's Encrypt - automatische Erneuerung
+- Pi-hole - DNS-basierter Schutz vor Tracking und Werbung
 
 ---
 
-## 👤 Autor
+## Dashboard Features
 
-Ayman El-Toufaili  
-Umschüler zum IT-System-Elektroniker  
-Praktikum ab September 2026  
+- Dark Mode + Light Mode Toggle
+- Deutsch / Englisch Sprachumschaltung
+- Live System-Daten (CPU, RAM, Temperatur, Uptime)
+- Energie-Gesamtstatistik seit Inbetriebnahme
+- Pi-hole Live-Stats (Anfragen, Blockrate, Clients)
+- Projekt-Portfolio mit Beschreibungen
+- IT-Helpdesk Bot (Floating Chat Widget)
+- Lebenslauf Download
+- Mobile-optimiert
 
 ---
 
-## ⚙️ Hosting
+## Autor
 
-Gehostet auf einem eigenen Raspberry Pi 4 im Heimnetzwerk
+Ayman El-Toufaili
+Umschüler zum IT-Systemelektroniker
+Praktikum ab September 2026 - Helpdesk, Netzwerktechnik, Systemadministration
 
----
+Gehostet auf eigenem Raspberry Pi 4 - Marl, NRW
