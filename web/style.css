@@ -816,3 +816,55 @@ section {
 @media (max-width: 768px) {
   .page-header { margin-bottom: 16px; }
 }
+
+.intro-text {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--accent);
+  line-height: 1.8;
+}
+
+.cv-btn {
+  padding: 7px 16px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  text-decoration: none;
+  transition: 0.15s;
+  font-family: var(--sans);
+}
+
+.cv-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.project-result {
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-style: italic;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: rgba(45,125,125,0.08);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-result + .project-tags,
+.project-result ~ .project-tags {
+  margin-top: 8px;
+}
+
+.project-tags .project-result {
+  width: 100%;
+  margin-bottom: 10px;
+}
