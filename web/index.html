@@ -167,7 +167,7 @@
 
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-label" data-de="Anfragen heute" data-en="Queries today">Anfragen heute</div>
+        <div class="metric-label" data-de="Anfragen" data-en="Queries">Anfragen</div>
         <div class="metric-value mono" id="ph-total">–</div>
       </div>
       <div class="metric-card accent-green">
@@ -182,14 +182,6 @@
       <div class="metric-card">
         <div class="metric-label" data-de="Blockliste" data-en="Blocklist">Blockliste</div>
         <div class="metric-value mono small" id="ph-gravity">–</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label" data-de="Aktive Clients" data-en="Active Clients">Aktive Clients</div>
-        <div class="metric-value mono" id="ph-clients">–</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-label" data-de="Cache Treffer" data-en="Cache Hits">Cache Treffer</div>
-        <div class="metric-value mono" id="ph-cache">–</div>
       </div>
     </div>
   </section>
@@ -316,7 +308,7 @@
 
 
       <div class="project-card">
-        <div class="project-header" onclick="toggleProject('p6')">
+        <div class="project-header" onclick="toggleProject('p5')">
           <div class="project-left">
             <span class="project-num">05</span>
             <div>
@@ -326,9 +318,9 @@
               </div>
             </div>
           </div>
-          <span class="project-arrow" id="arrow-p6">▼</span>
+          <span class="project-arrow" id="arrow-p5">▼</span>
         </div>
-        <div class="project-body" id="p6">
+        <div class="project-body" id="p5">
           <p data-de="Netzwerkweiter Werbeblocker auf DNS-Ebene. Pi-hole filtert Werbung und Tracking für alle Geräte im Heimnetz — Laptops, Smartphones, Smart-TVs — ohne dass auf jedem Gerät etwas installiert werden muss." data-en="Network-wide ad blocker at DNS level. Pi-hole filters ads and tracking for all devices on the home network — laptops, smartphones, smart TVs — without installing anything on each device.">Netzwerkweiter Werbeblocker auf DNS-Ebene. Pi-hole filtert Werbung und Tracking für alle Geräte im Heimnetz — Laptops, Smartphones, Smart-TVs — ohne dass auf jedem Gerät etwas installiert werden muss.</p>
           <ul>
             <li data-de="Pi-hole installiert und konfiguriert" data-en="Pi-hole installed and configured">Pi-hole installiert und konfiguriert</li>
@@ -344,6 +336,70 @@
           </div>
         </div>
       </div>
+     
+      <div class="project-card">
+  <div class="project-header" onclick="toggleProject('p6')">
+    <div class="project-left">
+      <span class="project-num">06</span>
+      <div>
+        <div class="project-title" data-de="Uptime Monitoring mit Docker" data-en="Uptime Monitoring with Docker">
+          Uptime Monitoring mit Docker
+        </div>
+        <div class="project-tags">
+          <span class="tag">Docker</span>
+          <span class="tag">Uptime Kuma</span>
+          <span class="tag">Monitoring</span>
+          <span class="tag">nginx</span>
+        </div>
+      </div>
+    </div>
+    <span class="project-arrow" id="arrow-p6">▼</span>
+  </div>
+
+  <div class="project-body" id="p6">
+    <p data-de="Erstes Docker-Projekt: Uptime Kuma als Container deployed und alle Services live überwacht. Docker ermöglicht isolierte, portable Deployments ohne manuelle Abhängigkeiten – ein moderner Ansatz den viele IT-Unternehmen einsetzen."
+       data-en="First Docker project: Deployed Uptime Kuma as a container and monitors all services live. Docker enables isolated, portable deployments without manual dependencies – a modern approach used by many IT companies.">
+      Erstes Docker-Projekt: Uptime Kuma als Container deployed und alle Services live überwacht. Docker ermöglicht isolierte, portable Deployments ohne manuelle Abhängigkeiten – ein moderner Ansatz den viele IT-Unternehmen einsetzen.
+    </p>
+
+    <ul>
+      <li data-de="Docker auf Raspberry Pi 4 (ARM64) installiert und konfiguriert" data-en="Docker installed and configured on Raspberry Pi 4 (ARM64)">
+        Docker auf Raspberry Pi 4 (ARM64) installiert und konfiguriert
+      </li>
+      <li data-de="Uptime Kuma Container mit persistentem Volume deployed" data-en="Uptime Kuma container deployed with persistent volume">
+        Uptime Kuma Container mit persistentem Volume deployed
+      </li>
+      <li data-de="4 Monitore eingerichtet: Website, Internet, Pi-hole DNS, pi-api" data-en="4 monitors configured: Website, Internet, Pi-hole DNS, pi-api">
+        4 Monitore eingerichtet: Website, Internet, Pi-hole DNS, pi-api
+      </li>
+      <li data-de="nginx Reverse Proxy für Uptime Kuma API konfiguriert" data-en="nginx reverse proxy configured for Uptime Kuma API">
+        nginx Reverse Proxy für Uptime Kuma API konfiguriert
+      </li>
+      <li data-de="Live Status Card im Dashboard integriert" data-en="Live status card integrated in dashboard">
+        Live Status Card im Dashboard integriert
+      </li>
+      <li data-de="Container startet automatisch nach Neustart (--restart always)" data-en="Container restarts automatically after reboot (--restart always)">
+        Container startet automatisch nach Neustart (--restart always)
+      </li>
+    </ul>
+
+    <p class="project-result"
+       data-de="Ergebnis: Professionelles Service-Monitoring mit moderner Container-Technologie – zeigt Kenntnisse in Docker die in der IT-Branche heute vorausgesetzt werden."
+       data-en="Result: Professional service monitoring with modern container technology – demonstrates Docker skills that are expected in the IT industry today.">
+      Ergebnis: Professionelles Service-Monitoring mit moderner Container-Technologie – zeigt Kenntnisse in Docker die in der IT-Branche heute vorausgesetzt werden.
+    </p>
+
+    <div class="project-tags">
+      <span class="tag">Docker</span>
+      <span class="tag">Uptime Kuma</span>
+      <span class="tag">Monitoring</span>
+      <span class="tag">nginx</span>
+      <span class="tag">ARM64</span>
+      <span class="tag">Container</span>
+      <span class="tag">REST API</span>
+    </div>
+  </div>
+</div>
 
     </div>
   </section>
