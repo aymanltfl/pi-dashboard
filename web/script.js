@@ -215,3 +215,42 @@ setInterval(loadPihole, 30000);
 loadStatus();
 loadTotals();
 loadPihole();
+
+// ─── UPTIME KUMA ──────────────────────────────────────────────────────────────
+async function loadUptime() {
+  try {
+    const [pageRes, hbRes] = await Promise.all([
+      fetch("/uptime-api/status-page/pi"),
+      fetch("/uptime-api/status-page/heartbeat/pi")
+    ]);
+    const page = await pageRes.json();
+    const hb = await hbRes.json();
+
+    const monitors = page.publicGroupList?.[0]?.monitorList || [];
+    const grid = document.getElementById("uptime-grid");
+
+    grid.innerHTML = monitors.map(m => {
+      const beats = hb.heartbeatList?.[m.id] || [];
+      const last = beats[beats.length - 1];
+      const online = last?.status === 1;
+      const ping = last?.ping ? last.ping + "ms" : "–";
+      const uptime = hb.uptimeList?.[m.id + "_24"];
+      const uptimePct = uptime !== undefined ? (uptime * 100).toFixed(1) + "%" : "–";
+      return `
+        <div class="metric-card ${online ? "" : ""}">
+          <div class="metric-label">${m.name}</div>
+          <div class="metric-value mono" style="color:${online ? "var(--green)" : "#e74c3c"};font-size:0.9rem;">
+            ${online ? "● Online" : "● Offline"}
+          </div>
+          <div style="font-size:0.7rem;color:var(--text2);margin-top:6px;font-family:var(--mono);">
+            ${ping} · ${uptimePct} uptime
+          </div>
+        </div>`;
+    }).join("");
+  } catch {
+    document.getElementById("uptime-grid").innerHTML = "<div style='color:var(--text2);font-size:0.85rem;'>Uptime Kuma offline</div>";
+  }
+}
+
+setInterval(loadUptime, 60000);
+loadUptime();

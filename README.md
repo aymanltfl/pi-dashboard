@@ -12,7 +12,7 @@ Demo-Zugang:
 
 ## Projektübersicht
 
-Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration, Authentifizierung und netzwerkweitem Werbeblocker.
+Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration, Authentifizierung, netzwerkweitem Werbeblocker und Container-basiertem Monitoring.
 
 ---
 
@@ -61,6 +61,15 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 - Pi-hole API über nginx Reverse Proxy erreichbar
 - Live-Stats Card im Dashboard integriert
 
+### Projekt 6 - Uptime Monitoring mit Docker
+- Erstes Docker-Projekt auf Raspberry Pi 4 (ARM64)
+- Uptime Kuma als Docker Container deployed
+- Persistentes Volume für Datenspeicherung eingerichtet
+- 4 Monitore konfiguriert: Website, Internet, Pi-hole DNS, pi-api
+- nginx Reverse Proxy für Uptime Kuma API konfiguriert
+- Live Status Card im Dashboard integriert
+- Container startet automatisch nach Neustart (--restart always)
+
 ---
 
 ## Technologien
@@ -75,6 +84,7 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 | Security | UFW, Fail2ban, Let's Encrypt, JWT, Tailscale |
 | Remote Access | Tailscale VPN |
 | KI | Groq API, LLaMA 3 |
+| Container | Docker, Uptime Kuma |
 | Versionskontrolle | Git, GitHub |
 | Prozessmanagement | systemd |
 
@@ -95,7 +105,9 @@ Raspberry Pi 4:
   - /api/energy_total --> Python API (nur localhost, Port 5000)
   - /api/chat --> Helpdesk Bot (nur localhost, Port 5001)
   - /pihole-api/ --> Pi-hole API (Port 8080)
+  - /uptime-api/ --> Uptime Kuma API (Docker, Port 3001)
 - Pi-hole FTL (DNS-Filter, Port 53 + 8080, nur Heimnetz)
+- Docker Container: Uptime Kuma (Port 3001, nur localhost)
 - Alle APIs binden nur auf 127.0.0.1 - kein direkter Internetzugriff
 - Tailscale VPN fuer sicheren SSH-Zugriff (Port 22 nur ueber Tailscale)
 - DuckDNS Cronjob (IP-Update alle 5 Minuten)
@@ -107,8 +119,9 @@ Raspberry Pi 4:
 - nginx als einziger oeffentlicher Entry Point
 - Alle APIs nur auf localhost gebunden (127.0.0.1)
 - JWT-Authentifizierung schuetzt das komplette Dashboard
-- UFW Firewall - nur Port 80/443 oeffentlich, Port 53/8080 nur Heimnetz
-- SSH nur ueber Tailscale VPN erreichbar (Port 22 nicht oeffentlich)
+- UFW Firewall - nur Port 80/443 oeffentlich
+- Port 53/8080 nur Heimnetz, Port 3001 nur Docker-intern
+- SSH nur ueber Tailscale VPN erreichbar
 - Fail2ban - automatische IP-Sperrung bei Brute-Force
 - SSL/TLS mit Let's Encrypt - automatische Erneuerung
 - Pi-hole - DNS-basierter Schutz vor Tracking und Werbung
@@ -122,6 +135,7 @@ Raspberry Pi 4:
 - Live System-Daten (CPU, RAM, Temperatur, Uptime)
 - Energie-Gesamtstatistik seit Inbetriebnahme
 - Pi-hole Live-Stats (Anfragen, Blockrate, Clients)
+- Uptime Monitoring Status Card (Uptime Kuma)
 - Projekt-Portfolio mit Beschreibungen
 - IT-Helpdesk Bot (Floating Chat Widget)
 - Lebenslauf Download
