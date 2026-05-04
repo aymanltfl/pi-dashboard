@@ -94,25 +94,47 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 
 ## Architektur
 
-Internet --> DuckDNS (aymanel-pi.duckdns.org) --> Fritz!Box 7560 (Port 443/80) --> Raspberry Pi 4
+Internet → https://ayman-eltoufaili.de → Fritz!Box 7560 → Raspberry Pi 4 → nginx (Reverse Proxy)
 
-Raspberry Pi 4:
-- nginx (einziger oeffentlicher Entry Point, Port 443/80)
-  - / --> index.html (Login-geschuetzt)
-  - /login.html --> Login-Seite
-  - /auth/ --> Auth Service (nur localhost, Port 5002)
-  - /api/status --> Python API (nur localhost, Port 5000)
-  - /api/uptime --> Python API (nur localhost, Port 5000)
-  - /api/power --> Python API (nur localhost, Port 5000)
-  - /api/energy_total --> Python API (nur localhost, Port 5000)
-  - /api/chat --> Helpdesk Bot (nur localhost, Port 5001)
-  - /pihole-api/ --> Pi-hole API (Port 8080)
-  - /uptime-api/ --> Uptime Kuma API (Docker, Port 3001)
-- Pi-hole FTL (DNS-Filter, Port 53 + 8080, nur Heimnetz)
-- Docker Container: Uptime Kuma (Port 3001, nur localhost)
-- Alle APIs binden nur auf 127.0.0.1 - kein direkter Internetzugriff
-- Tailscale VPN fuer sicheren SSH-Zugriff (Port 22 nur ueber Tailscale)
-- DuckDNS Cronjob (IP-Update alle 5 Minuten)
+## Entry Point
+
+- https://ayman-eltoufaili.de (Primary Access)
+- nginx als einziger öffentlicher Einstiegspunkt (Port 80/443)
+
+## Core System
+
+- Login-geschützte Dashboard-Seite `/`
+- Auth Service (nur localhost:5002)
+- keine direkten öffentlichen Zugriffe auf Backend-Services
+
+## Backend APIs (localhost only)
+
+- `/api/status` → System Metrics (CPU, RAM, Temperatur)
+- `/api/uptime` → Uptime & Service Status
+- `/api/power` → Stromverbrauchs-Tracking
+- `/api/energy_total` → Gesamtenergie-Statistik
+- `/api/chat` → KI Helpdesk Bot (LLaMA 3 via Groq API)
+
+## Services
+
+- Pi-hole DNS Filter (Port 53 / 8080, nur Heimnetz)
+- Uptime Kuma (Docker Container, Port 3001)
+- eigene Domain als zentraler Entry Point (kein DuckDNS mehr)
+
+## Security Layer
+
+- Alle APIs nur auf 127.0.0.1 gebunden (kein Internetzugriff)
+- nginx als einziges öffentliches Interface
+- Tailscale VPN für sicheren SSH-Zugriff
+- Fritz!Box Portweiterleitung nur für 80/443
+
+## Infrastruktur Services
+
+- Raspberry Pi 4 (Linux Server)
+- nginx Reverse Proxy
+- Docker (Uptime Kuma)
+- systemd Services für Autostart
+- Cronjobs (Automation & Updates)
 
 ---
 
