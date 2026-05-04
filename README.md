@@ -140,12 +140,12 @@ Internet → https://ayman-eltoufaili.de → Fritz!Box 7560 → Raspberry Pi 4 �
 
 ## Sicherheit
 
-- nginx als einziger oeffentlicher Entry Point
+- nginx als einziger öffentlicher Entry Point
 - Alle APIs nur auf localhost gebunden (127.0.0.1)
-- JWT-Authentifizierung schuetzt das komplette Dashboard
-- UFW Firewall - nur Port 80/443 oeffentlich
+- JWT-Authentifizierung schützt das komplette Dashboard
+- UFW Firewall - nur Port 80/443 öffentlich
 - Port 53/8080 nur Heimnetz, Port 3001 nur Docker-intern
-- SSH nur ueber Tailscale VPN erreichbar
+- SSH nur über Tailscale VPN erreichbar
 - Fail2ban - automatische IP-Sperrung bei Brute-Force
 - SSL/TLS mit Let's Encrypt - automatische Erneuerung
 - Pi-hole - DNS-basierter Schutz vor Tracking und Werbung
