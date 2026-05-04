@@ -1,3 +1,4 @@
 duckdns/duck.log
 duckdns/update.sh
 .env
+energy_log.json
