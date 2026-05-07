@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 </head>
 <body class="dark">
 
@@ -99,6 +100,14 @@
   </header>
 
   <!-- SYSTEM SECTION -->
+
+  <!-- NETWORK DIAGRAM -->
+  <section id="network-diagram">
+    <div class="section-label" data-de="NETZWERK · Live Topologie" data-en="NETWORK · Live Topology">NETZWERK · Live Topologie</div>
+    <div class="card network-card">
+      <svg id="network-svg" width="100%" height="500"></svg>
+    </div>
+  </section>
   <section id="system">
     <div class="section-label" data-de="LIVE · aktualisiert jede Sekunde" data-en="LIVE · updates every second">LIVE · aktualisiert jede Sekunde</div>
 

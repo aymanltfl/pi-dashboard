@@ -254,3 +254,194 @@ async function loadUptime() {
 
 setInterval(loadUptime, 60000);
 loadUptime();
+
+// ─── D3 NETWORK DIAGRAM ───────────────────────────────────────────────────────
+function initNetwork() {
+  const container = document.getElementById("network-svg");
+  if (!container) return;
+
+  const rect = container.parentElement.getBoundingClientRect();
+  const width = rect.width - 48;
+  const height = 500;
+
+  const svg = d3.select("#network-svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  // ─── NODES ──────────────────────────────────────────────────────────────────
+  const nodes = [
+    // Intern
+    { id: "local",      label: "Lokale Clients", group: "external", icon: "🏠", x: width*0.05, y: height*0.5 },
+    { id: "visitor",    label: "Web Besucher",   group: "external", icon: "👤", x: width*0.05, y: height*0.2 },
+    { id: "fritzbox",   label: "Fritz!Box",      group: "network",  icon: "📡", x: width*0.28, y: height*0.5  },
+    { id: "internet",   label: "Internet",       group: "external", icon: "🌐", x: width*0.5, y: height*0.15 },
+    { id: "pi",         label: "Raspberry Pi",   group: "server",   icon: "🖥",  x: width*0.5,  y: height*0.5  },
+    { id: "pihole",     label: "Pi-hole",        group: "service",  icon: "🛡",  x: width*0.5,  y: height*0.2  },
+    { id: "nginx",      label: "nginx",          group: "service",  icon: "⚙",  x: width*0.7,  y: height*0.35 },
+    { id: "api",        label: "Python API",     group: "service",  icon: "🔌", x: width*0.7,  y: height*0.65 },
+    { id: "helpdesk",   label: "Helpdesk Bot",   group: "service",  icon: "🤖", x: width*0.85, y: height*0.5  },
+    // Extern
+    { id: "groq",       label: "Groq API",       group: "cloud",    icon: "☁",  x: width*0.95, y: height*0.3  },
+    { id: "netcup",     label: "Netcup DNS",     group: "cloud",    icon: "☁",  x: width*0.95, y: height*0.7  },
+    { id: "letsencrypt",label: "Let's Encrypt",  group: "cloud",    icon: "🔒",  x: width*0.5,  y: height*0.85 },
+  ];
+
+  // ─── LINKS ──────────────────────────────────────────────────────────────────
+  const links = [
+    { source: "local",     target: "fritzbox",    type: "lan"     },
+    { source: "visitor",   target: "internet",    type: "wan"     },
+    { source: "fritzbox",  target: "internet",    type: "wan"     },
+    { source: "fritzbox",  target: "pi",          type: "lan"     },
+    { source: "pi",        target: "pihole",      type: "service" },
+    { source: "pi",        target: "nginx",       type: "service" },
+    { source: "pi",        target: "api",         type: "service" },
+    { source: "nginx",     target: "helpdesk",    type: "service" },
+    { source: "helpdesk",  target: "groq",        type: "cloud"   },
+    { source: "pi",        target: "netcup",      type: "cloud"   },
+    { source: "nginx",     target: "letsencrypt", type: "cloud"   },
+    { source: "pihole",    target: "internet",    type: "dns"     },
+    { source: "local",     target: "pihole",      type: "dns"     },
+  ];
+
+  // ─── FARBEN ─────────────────────────────────────────────────────────────────
+  const groupColors = {
+    external: "#7d8590",
+    network:  "#2d7d7d",
+    server:   "#2d7d7d",
+    service:  "#1f5c5c",
+    cloud:    "#444c56"
+  };
+
+  const linkColors = {
+    lan:     "#2d7d7d",
+    wan:     "#f59e0b",
+    service: "#4a9ead",
+    cloud:   "#555",
+    dns:     "#27ae60"
+  };
+
+  // ─── FORCE SIMULATION ───────────────────────────────────────────────────────
+  const simulation = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.id).distance(120))
+    .force("charge", d3.forceManyBody().strength(-400))
+    .force("center", d3.forceCenter(width * 0.48, height / 2).strength(0.3))
+    .force("collision", d3.forceCollide(50));
+
+  // ─── LINKS ──────────────────────────────────────────────────────────────────
+  const link = svg.append("g")
+    .selectAll("line")
+    .data(links)
+    .enter()
+    .append("line")
+    .attr("stroke", d => linkColors[d.type] || "#555")
+    .attr("stroke-width", 1.5)
+    .attr("stroke-opacity", 0.6)
+    .attr("stroke-dasharray", d => d.type === "cloud" ? "4,4" : "none");
+
+  // ─── NODE GROUPS ────────────────────────────────────────────────────────────
+  const nodeGroup = svg.append("g")
+    .selectAll("g")
+    .data(nodes)
+    .enter()
+    .append("g")
+    .attr("class", d => "node node-" + d.id)
+    .call(d3.drag()
+      .on("start", dragStart)
+      .on("drag", dragged)
+      .on("end", dragEnd));
+
+  // ─── NODE CIRCLES ───────────────────────────────────────────────────────────
+  nodeGroup.append("circle")
+    .attr("r", 24)
+    .attr("fill", d => groupColors[d.group] || "#2d7d7d")
+    .attr("stroke", "#0d1117")
+    .attr("stroke-width", 2);
+
+  // ─── NODE ICONS ─────────────────────────────────────────────────────────────
+  nodeGroup.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "central")
+    .attr("font-size", "25px")
+    .text(d => d.icon);
+
+  // ─── NODE LABELS ────────────────────────────────────────────────────────────
+  nodeGroup.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dy", 38)
+    .attr("font-size", "12px")
+    .attr("font-family", "JetBrains Mono, monospace")
+    .attr("fill", "#a0a8b4")
+    .text(d => d.label);
+
+  // ─── TICK ───────────────────────────────────────────────────────────────────
+  simulation.on("tick", () => {
+    link
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
+
+    nodeGroup.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+
+  // ─── DRAG ───────────────────────────────────────────────────────────────────
+  function dragStart(event, d) {
+    if (!event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x; d.fy = d.y;
+  }
+  function dragged(event, d) {
+    d.fx = event.x; d.fy = event.y;
+  }
+  function dragEnd(event, d) {
+    if (!event.active) simulation.alphaTarget(0);
+    d.fx = null; d.fy = null;
+  }
+
+  // ─── HEARTBEAT ──────────────────────────────────────────────────────────────
+  function heartbeat() {
+    nodeGroup.selectAll("circle")
+      .transition()
+      .duration(300)
+      .attr("r", 28)
+      .transition()
+      .duration(500)
+      .attr("r", 24);
+  }
+
+  setInterval(heartbeat, 30000);
+
+  // ─── PARTICLE FLOW ──────────────────────────────────────────────────────────
+  window.networkEmit = function(sourceId, targetId, color) {
+    const sourceNode = nodes.find(n => n.id === sourceId);
+    const targetNode = nodes.find(n => n.id === targetId);
+    if (!sourceNode || !targetNode) return;
+
+    const particle = svg.append("circle")
+      .attr("r", 5)
+      .attr("fill", color || "#2d7d7d")
+      .attr("cx", sourceNode.x)
+      .attr("cy", sourceNode.y);
+
+    particle.transition()
+      .duration(1000)
+      .ease(d3.easeLinear)
+      .attr("cx", targetNode.x)
+      .attr("cy", targetNode.y)
+      .on("end", () => particle.remove());
+  };
+
+  // ─── NODE PULSE ─────────────────────────────────────────────────────────────
+  window.networkPulse = function(nodeId, color) {
+    const n = svg.select(".node-" + nodeId).select("circle");
+    if (n.empty()) return;
+    n.transition().duration(200).attr("r", 32).attr("fill", color)
+     .transition().duration(600).attr("r", 28).attr("fill", d => groupColors[d.group] || "#2d7d7d");
+  };
+}
+
+// Init wenn DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initNetwork);
+} else {
+  initNetwork();
+}

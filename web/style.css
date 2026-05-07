@@ -38,7 +38,7 @@ body.dark {
 
 body {
   font-family: var(--sans);
-  background: var(--bg);
+  background: var(--card);
   color: var(--text);
   transition: background 0.3s, color 0.3s;
   min-height: 100vh;
@@ -638,7 +638,7 @@ section {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--bg);
+  background: var(--card);
 }
 
 .chat-input-row {
@@ -655,7 +655,7 @@ section {
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 0.83rem;
-  background: var(--bg);
+  background: var(--card);
   color: var(--text);
   font-family: var(--sans);
   outline: none;
@@ -867,4 +867,29 @@ section {
 .project-tags .project-result {
   width: 100%;
   margin-bottom: 10px;
+}
+
+/* ─── NETWORK DIAGRAM ────────────────────────────────────────────────────────── */
+.network-card {
+  padding: 0;
+  overflow: hidden;
+  background: var(--card);
+}
+
+#network-svg {
+  display: block;
+  width: 100%;
+}
+
+/* ─── NETWORK DIAGRAM ────────────────────────────────────────────────────────── */
+.network-card {
+  padding: 0;
+  overflow: hidden;
+  background: var(--card);
+  min-height: 500px;
+}
+
+#network-svg {
+  display: block;
+  width: 100%;
 }
