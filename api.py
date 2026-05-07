@@ -191,35 +191,30 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(str(e).encode())
 
-        elif self.path == "/api/monitor":
+        elif self.path == "/api/network":
             try:
-                services = [
-                    {"name": "Website", "type": "http", "target": "https://aymanel-pi.duckdns.org"},
-                    {"name": "Internet", "type": "http", "target": "https://google.com"},
-                    {"name": "DNS (1.1.1.1)", "type": "ping", "target": "1.1.1.1"},
-                    {"name": "nginx", "type": "systemd", "target": "nginx"},
-                    {"name": "pi-api", "type": "systemd", "target": "pi-api"},
-                    {"name": "pi-helpdesk", "type": "systemd", "target": "pi-helpdesk"},
-                    {"name": "SSL Zertifikat", "type": "ssl", "target": "certbot"},
-                ]
-                results = []
-                for s in services:
-                    if s["type"] == "http":
-                        result = check_http(s["target"])
-                    elif s["type"] == "ping":
-                        result = check_ping(s["target"])
-                    elif s["type"] == "systemd":
-                        result = check_systemd(s["target"])
-                    elif s["type"] == "ssl":
-                        result = check_ssl()
-                    results.append({
-                        "name": s["name"],
-                        **result
-                    })
+                import re
+                arp = subprocess.check_output(["arp", "-a"], stderr=subprocess.DEVNULL).decode()
+                devices = []
+                for line in arp.split("\n"):
+                    match = re.search(r"\(([\d\.]+)\)", line)
+                    if match:
+                        ip = match.group(1)
+                        if not ip.startswith("169") and not ip.startswith("255"):
+                            devices.append({"ip": ip})
+                services = {}
+                for svc in ["nginx", "pi-api", "pi-helpdesk", "pi-auth", "pihole-FTL"]:
+                    try:
+                        out = subprocess.check_output(["systemctl", "is-active", svc], stderr=subprocess.DEVNULL).decode().strip()
+                        services[svc] = out == "active"
+                    except:
+                        services[svc] = False
+                data = {"devices": devices, "device_count": len(devices), "services": services}
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
                 self.end_headers()
-                self.wfile.write(json.dumps({"services": results}).encode())
+                self.wfile.write(json.dumps(data).encode())
             except Exception as e:
                 self.send_response(500)
                 self.end_headers()
