@@ -255,60 +255,57 @@ async function loadUptime() {
 setInterval(loadUptime, 60000);
 loadUptime();
 
+let networkData = { device_count: 0, services: {} };
+
+async function loadNetworkData() {
+  try {
+    const res = await fetch("/api/network");
+    networkData = await res.json();
+  } catch {}
+}
+
+setInterval(loadNetworkData, 30000);
+loadNetworkData();
 // ─── D3 NETWORK DIAGRAM ───────────────────────────────────────────────────────
 function initNetwork() {
   const container = document.getElementById("network-svg");
   if (!container) return;
 
   const rect = container.parentElement.getBoundingClientRect();
-  const width = rect.width - 48;
-  const height = 500;
+  const width = rect.width - 55;
+  const height = 300;
 
   const svg = d3.select("#network-svg")
     .attr("width", width)
     .attr("height", height);
 
   // ─── NODES ──────────────────────────────────────────────────────────────────
-  const nodes = [
-    // Intern
-    { id: "local",      label: "Lokale Clients", group: "external", icon: "🏠", x: width*0.05, y: height*0.5 },
-    { id: "visitor",    label: "Web Besucher",   group: "external", icon: "👤", x: width*0.05, y: height*0.2 },
-    { id: "fritzbox",   label: "Fritz!Box",      group: "network",  icon: "📡", x: width*0.28, y: height*0.5  },
-    { id: "internet",   label: "Internet",       group: "external", icon: "🌐", x: width*0.5, y: height*0.15 },
-    { id: "pi",         label: "Raspberry Pi",   group: "server",   icon: "🖥",  x: width*0.5,  y: height*0.5  },
-    { id: "pihole",     label: "Pi-hole",        group: "service",  icon: "🛡",  x: width*0.5,  y: height*0.2  },
-    { id: "nginx",      label: "nginx",          group: "service",  icon: "⚙",  x: width*0.7,  y: height*0.35 },
-    { id: "api",        label: "Python API",     group: "service",  icon: "🔌", x: width*0.7,  y: height*0.65 },
-    { id: "helpdesk",   label: "Helpdesk Bot",   group: "service",  icon: "🤖", x: width*0.85, y: height*0.5  },
-    // Extern
-    { id: "groq",       label: "Groq API",       group: "cloud",    icon: "☁",  x: width*0.95, y: height*0.3  },
-    { id: "netcup",     label: "Netcup DNS",     group: "cloud",    icon: "☁",  x: width*0.95, y: height*0.7  },
-    { id: "letsencrypt",label: "Let's Encrypt",  group: "cloud",    icon: "🔒",  x: width*0.5,  y: height*0.85 },
-  ];
+
+const nodes = [
+    { id: "visitor",  label: "Web Besucher",  group: "external", icon: "👤", fx: width*0.15, fy: height*0.2 },
+    { id: "internet", label: "Internet",       group: "external", icon: "🌐", fx: width*0.5,  fy: height*0.2 },
+    { id: "pihole",   label: "Pi-hole",        group: "service",  icon: "🛡", fx: width*0.9,  fy: height*0.2 },
+    { id: "local",    label: "Lokale Clients", group: "external", icon: "🏠", fx: width*0.2, fy: height*0.8 },
+    { id: "fritzbox", label: "Fritz!Box",      group: "network",  icon: "📡", fx: width*0.5,  fy: height*0.8 },
+    { id: "pi",       label: "Raspberry Pi",   group: "server",   icon: "🖥",  fx: width*0.9,  fy: height*0.8 },
+];
 
   // ─── LINKS ──────────────────────────────────────────────────────────────────
-  const links = [
-    { source: "local",     target: "fritzbox",    type: "lan"     },
-    { source: "visitor",   target: "internet",    type: "wan"     },
-    { source: "fritzbox",  target: "internet",    type: "wan"     },
-    { source: "fritzbox",  target: "pi",          type: "lan"     },
-    { source: "pi",        target: "pihole",      type: "service" },
-    { source: "pi",        target: "nginx",       type: "service" },
-    { source: "pi",        target: "api",         type: "service" },
-    { source: "nginx",     target: "helpdesk",    type: "service" },
-    { source: "helpdesk",  target: "groq",        type: "cloud"   },
-    { source: "pi",        target: "netcup",      type: "cloud"   },
-    { source: "nginx",     target: "letsencrypt", type: "cloud"   },
-    { source: "pihole",    target: "internet",    type: "dns"     },
-    { source: "local",     target: "pihole",      type: "dns"     },
-  ];
+const links = [
+    { source: "visitor",  target: "internet", type: "wan"     },
+    { source: "internet", target: "fritzbox", type: "wan"     },
+    { source: "pihole",   target: "internet", type: "dns"     },
+    { source: "pi",       target: "pihole",   type: "service" },
+    { source: "local",    target: "fritzbox", type: "lan"     },
+    { source: "fritzbox", target: "pi",       type: "lan"     },
+];
 
   // ─── FARBEN ─────────────────────────────────────────────────────────────────
   const groupColors = {
-    external: "#7d8590",
-    network:  "#2d7d7d",
-    server:   "#2d7d7d",
-    service:  "#1f5c5c",
+    external: "#ffffff",
+    network:  "#feffaf",
+    server:   "#aa3365",
+    service:  "#ff9494",
     cloud:    "#444c56"
   };
 
@@ -334,8 +331,8 @@ function initNetwork() {
     .enter()
     .append("line")
     .attr("stroke", d => linkColors[d.type] || "#555")
-    .attr("stroke-width", 1.5)
-    .attr("stroke-opacity", 0.6)
+    .attr("stroke-width", 4)
+    .attr("stroke-opacity", 0.4)
     .attr("stroke-dasharray", d => d.type === "cloud" ? "4,4" : "none");
 
   // ─── NODE GROUPS ────────────────────────────────────────────────────────────
@@ -345,11 +342,42 @@ function initNetwork() {
     .enter()
     .append("g")
     .attr("class", d => "node node-" + d.id)
-    .call(d3.drag()
-      .on("start", dragStart)
-      .on("drag", dragged)
-      .on("end", dragEnd));
 
+
+  // ─── TOOLTIP ────────────────────────────────────────────────────────────────
+  const tooltip = d3.select("body").append("div")
+    .style("position", "fixed")
+    .style("background", "#1a1f2a")
+    .style("border", "1px solid #2d7d7d")
+    .style("border-radius", "8px")
+    .style("padding", "8px 12px")
+    .style("font-size", "11px")
+    .style("font-family", "JetBrains Mono, monospace")
+    .style("color", "#e6edf3")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 9999);
+
+  nodeGroup
+    .on("mouseover", function(event, d) {
+      let content = `<strong>${d.label}</strong>`;
+      if (d.id === "local") {
+        content += `<br>${networkData.device_count} Geräte im Netz`;
+      }
+      tooltip
+        .html(content)
+        .style("opacity", 1)
+        .style("left", (event.clientX + 12) + "px")
+        .style("top", (event.clientY - 8) + "px");
+    })
+    .on("mousemove", function(event) {
+      tooltip
+        .style("left", (event.clientX + 12) + "px")
+        .style("top", (event.clientY - 8) + "px");
+    })
+    .on("mouseout", function() {
+      tooltip.style("opacity", 0);
+    });
   // ─── NODE CIRCLES ───────────────────────────────────────────────────────────
   nodeGroup.append("circle")
     .attr("r", 24)
@@ -366,12 +394,16 @@ function initNetwork() {
 
   // ─── NODE LABELS ────────────────────────────────────────────────────────────
   nodeGroup.append("text")
-    .attr("text-anchor", "middle")
-    .attr("dy", 38)
-    .attr("font-size", "12px")
-    .attr("font-family", "JetBrains Mono, monospace")
-    .attr("fill", "#a0a8b4")
-    .text(d => d.label);
+      .attr("text-anchor", "middle")
+      .attr("dy", 38)
+      .attr("font-size", "13px")
+      .attr("font-family", "DM Sans, sans-serif")
+      .attr("fill", "#000000")
+      .attr("paint-order", "stroke")
+      .attr("stroke", "#ffffff56")
+      .attr("stroke-width", "2px")
+      .attr("stroke-linejoin", "round")
+      .text(d => d.label);
 
   // ─── TICK ───────────────────────────────────────────────────────────────────
   simulation.on("tick", () => {
@@ -383,19 +415,6 @@ function initNetwork() {
 
     nodeGroup.attr("transform", d => `translate(${d.x},${d.y})`);
   });
-
-  // ─── DRAG ───────────────────────────────────────────────────────────────────
-  function dragStart(event, d) {
-    if (!event.active) simulation.alphaTarget(0.3).restart();
-    d.fx = d.x; d.fy = d.y;
-  }
-  function dragged(event, d) {
-    d.fx = event.x; d.fy = event.y;
-  }
-  function dragEnd(event, d) {
-    if (!event.active) simulation.alphaTarget(0);
-    d.fx = null; d.fy = null;
-  }
 
   // ─── HEARTBEAT ──────────────────────────────────────────────────────────────
   function heartbeat() {

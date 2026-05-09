@@ -886,7 +886,7 @@ section {
   padding: 0;
   overflow: hidden;
   background: var(--card);
-  min-height: 500px;
+  min-height: 300px;
 }
 
 #network-svg {
