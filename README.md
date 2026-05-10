@@ -14,63 +14,102 @@ Demo-Zugang:
 
 ## Projektübersicht
 
-Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers - von der Netzwerkkonfiguration über die API-Entwicklung bis hin zur KI-Integration, Authentifizierung, netzwerkweitem Werbeblocker und Container-basiertem Monitoring.
+Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimservers – von Netzwerkkonfiguration, API-Entwicklung, Security-Setup, Monitoring, KI-Integration bis hin zu Containerisierung und Visualisierung.
+
+Der Fokus liegt auf einer realistischen Home-Lab Infrastruktur mit IT-typischen Komponenten wie Reverse Proxy, DNS-Filtering, Auth-Systemen, Monitoring und Automatisierung.
 
 ---
 
 ## Projekte
 
 ### Projekt 1 - Raspberry Pi Heimserver
+
+- Aufbau eines vollständigen Linux-Servers auf Raspberry Pi 4
 - nginx als Webserver und Reverse Proxy konfiguriert
 - Python REST-API entwickelt (CPU, RAM, Temperatur, Uptime)
-- DuckDNS für dynamisches DNS eingerichtet (Cronjob alle 5 Min.)
-- Portweiterleitung über Fritz!Box 7560
-- SSL-Zertifikat mit Let's Encrypt (HTTPS)
+- Eigene Domain (ayman-eltoufaili.de) über Netcup angebunden
+- Dynamische DNS / IP Aktualisierung automatisiert
+- SSL-Zertifikate mit Let's Encrypt (HTTPS aktiv)
 - Firewall mit UFW konfiguriert
-- Fail2ban für SSH-Schutz eingerichtet
-- Alle Dienste als systemd-Services (Autostart)
+- Fail2ban Schutz gegen Brute-Force Angriffe
+- Alle Dienste als systemd Services mit Autostart
 
-### Projekt 2 - Energie-Monitoring
-- Stromverbrauch-Schätzung basierend auf CPU Last
-- Kostenberechnung (0,30 Euro/kWh)
-- CO2-Emissionen basierend auf deutschem Strommix
-- Gesamtstatistik persistent in energy_log.json gespeichert
-- REST API Endpunkt /api/energy_total
+---
 
-### Projekt 3 - IT-Helpdesk Bot
-- KI-Chatbot mit Groq API (LLaMA 3)
+### Projekt 2 - Energie-Monitoring (Green IT)
+
+- Live-Überwachung des Stromverbrauchs des Raspberry Pi Servers
+- Realistische Verbrauchsschätzung mit Idle- und Max-Werten des Geräts
+- Berechnung von Kosten basierend auf deutschem Strompreis (0,30 €/kWh)
+- CO₂-Emissionen basierend auf deutschem Strommix (~0,4 kg/kWh)
+- Persistente Speicherung der Verbrauchsdaten in energy_log.json
+- REST API Endpunkt /api/energy_total für Gesamtstatistiken
+
+**Ergebnis:**  
+Transparente und realistischere Energie-Analyse eines Home-Lab Servers mit Fokus auf Nachhaltigkeit und Green IT.
+
+---
+
+### Projekt 3 - IT-Helpdesk Bot (KI Integration)
+
+- KI-basierter Chatbot für IT-Support
+- Nutzung der Groq API mit LLaMA 3 Modell
 - Beantwortet IT-Fragen automatisch auf Deutsch
-- Gesprächsgedächtnis implementiert
-- Python Backend + REST API (/api/chat)
-- Floating Chat-Widget auf der Website
+- Gesprächsgedächtnis für Kontext-Verständnis
+- Python Backend mit REST API (/api/chat)
+- Floating Chat Widget in Dashboard integriert
 
-### Projekt 4 - JWT Authentifizierung
-- Eigenes JWT-basiertes Authentifizierungssystem
-- Python Auth-Service (nur localhost)
+---
+
+### Projekt 4 - JWT Authentifizierungssystem
+
+- Eigenes Login-System mit JWT Tokens
+- Python Auth-Service (nur localhost Zugriff)
 - Zwei Benutzerrollen: Admin und Demo
-- Login-Seite im Dashboard-Design
-- Token-Verifizierung bei jedem Seitenaufruf
-- Logout-Funktion mit Token-Löschung
+- Token-basierte Session Verwaltung im Browser
+- Schutz des gesamten Dashboards
+- Logout durch Token Invalidierung
+
+---
 
 ### Projekt 5 - Pi-hole Netzwerk-Werbeblocker
+
+- Netzwerkweiter DNS-basierter Adblocker
 - Pi-hole auf Raspberry Pi installiert und konfiguriert
-- DNS-Filter für das gesamte Heimnetz (Laptops, Smartphones, Smart-TVs)
-- Port-Konflikt mit nginx gelöst - Pi-hole FTL auf Port 8080
-- UFW Firewall für Port 53 und 8080 im Heimnetz konfiguriert
-- Fritz!Box DNS auf Pi-hole umgestellt mit automatischem Fallback
-- DNS-Rebind-Schutz für eigene Domain eingetragen
-- Über 242.000 Domains auf der Blockliste
-- Pi-hole API über nginx Reverse Proxy erreichbar
-- Live-Stats Card im Dashboard integriert
+- Filterung von Werbung und Tracking für alle Geräte im Heimnetz
+- Fritz!Box DNS Umstellung auf Pi-hole
+- Port-Konflikt mit nginx gelöst (Port 8080)
+- Über 242.000 blockierte Domains
+- Pi-hole API über nginx Reverse Proxy integriert
+- Live Statistik im Dashboard
+
+---
 
 ### Projekt 6 - Uptime Monitoring mit Docker
-- Erstes Docker-Projekt auf Raspberry Pi 4 (ARM64)
-- Uptime Kuma als Docker Container deployed
-- Persistentes Volume für Datenspeicherung eingerichtet
-- 4 Monitore konfiguriert: Website, Internet, Pi-hole DNS, pi-api
-- nginx Reverse Proxy für Uptime Kuma API konfiguriert
-- Live Status Card im Dashboard integriert
-- Container startet automatisch nach Neustart (--restart always)
+
+- Erstes Docker Projekt auf Raspberry Pi (ARM64)
+- Uptime Kuma als Container deployed
+- Persistente Datenhaltung via Docker Volumes
+- Monitoring von Website, DNS, API und Internet
+- nginx Reverse Proxy für Zugriff integriert
+- Automatischer Restart bei Systemstart
+- Live Status Anzeige im Dashboard
+
+---
+
+### Projekt 7 - Interaktive Netzwerk-Topologie (D3.js)
+
+- Entwicklung einer Live Netzwerk Visualisierung mit D3.js
+- Darstellung aller Home-Lab Komponenten als Graph
+- Echtzeit Netzwerk-Topologie mit Force Simulation
+- Integration von Live Daten aus /api/network
+- Visualisierung von Clients, Servern, DNS und Cloud Services
+- Tooltip-System mit dynamischen Gerätedaten
+- Animationen für Netzwerkaktivität und Heartbeat
+- Erweiterbar für zukünftige Monitoring Events
+
+**Ergebnis:**  
+Visuelle Echtzeit-Darstellung der gesamten Infrastruktur für besseres Verständnis komplexer Netzwerkstrukturen.
 
 ---
 
@@ -79,98 +118,88 @@ Dieses Projekt dokumentiert den Aufbau und Betrieb eines vollständigen Heimserv
 | Bereich | Tools |
 |---|---|
 | Hardware | Raspberry Pi 4 (2GB RAM) |
-| Betriebssystem | Raspberry Pi OS (Debian Trixie) |
+| Betriebssystem | Raspberry Pi OS (Debian) |
 | Webserver | nginx |
 | Backend | Python 3 |
-| DNS | DuckDNS, Pi-hole |
-| Security | UFW, Fail2ban, Let's Encrypt, JWT, Tailscale |
+| API | REST Architektur |
+| DNS | Pi-hole, Netcup DNS |
+| Security | UFW, Fail2ban, JWT, Let's Encrypt |
 | Remote Access | Tailscale VPN |
 | KI | Groq API, LLaMA 3 |
 | Container | Docker, Uptime Kuma |
+| Visualisierung | D3.js |
 | Versionskontrolle | Git, GitHub |
-| Prozessmanagement | systemd |
+| Automatisierung | systemd, Cronjobs |
 
 ---
 
 ## Architektur
 
-Internet → https://ayman-eltoufaili.de → Fritz!Box 7560 → Raspberry Pi 4 → nginx (Reverse Proxy)
+Internet → Domain (ayman-eltoufaili.de) → Fritz!Box 7560 → Raspberry Pi 4 → nginx Reverse Proxy → interne Services
+
+---
 
 ## Entry Point
 
-- https://ayman-eltoufaili.de (Primary Access)
-- nginx als einziger öffentlicher Einstiegspunkt (Port 80/443)
+- https://ayman-eltoufaili.de
+- nginx als einziger öffentlicher Zugang (Port 80/443)
 
-## Core System
+---
 
-- Login-geschützte Dashboard-Seite `/`
-- Auth Service (nur localhost:5002)
-- keine direkten öffentlichen Zugriffe auf Backend-Services
+## Backend APIs (lokal gebunden)
 
-## Backend APIs (localhost only)
-
-- `/api/status` → System Metrics (CPU, RAM, Temperatur)
-- `/api/uptime` → Uptime & Service Status
-- `/api/power` → Stromverbrauchs-Tracking
-- `/api/energy_total` → Gesamtenergie-Statistik
-- `/api/chat` → KI Helpdesk Bot (LLaMA 3 via Groq API)
-
-## Services
-
-- Pi-hole DNS Filter (Port 53 / 8080, nur Heimnetz)
-- Uptime Kuma (Docker Container, Port 3001)
-- eigene Domain als zentraler Entry Point (kein DuckDNS mehr)
-
-## Security Layer
-
-- Alle APIs nur auf 127.0.0.1 gebunden (kein Internetzugriff)
-- nginx als einziges öffentliches Interface
-- Tailscale VPN für sicheren SSH-Zugriff
-- Fritz!Box Portweiterleitung nur für 80/443
-
-## Infrastruktur Services
-
-- Raspberry Pi 4 (Linux Server)
-- nginx Reverse Proxy
-- Docker (Uptime Kuma)
-- systemd Services für Autostart
-- Cronjobs (Automation & Updates)
+- /api/status → Systemdaten (CPU, RAM, Temperatur)
+- /api/uptime → Laufzeit & Service Status
+- /api/power → Energieverbrauch Schätzung
+- /api/energy_total → Gesamtenergie Statistik
+- /api/chat → KI Helpdesk Bot
+- /api/network → Netzwerk Topologie Daten
 
 ---
 
 ## Sicherheit
 
-- nginx als einziger öffentlicher Entry Point
-- Alle APIs nur auf localhost gebunden (127.0.0.1)
-- JWT-Authentifizierung schützt das komplette Dashboard
-- UFW Firewall - nur Port 80/443 öffentlich
-- Port 53/8080 nur Heimnetz, Port 3001 nur Docker-intern
-- SSH nur über Tailscale VPN erreichbar
-- Fail2ban - automatische IP-Sperrung bei Brute-Force
-- SSL/TLS mit Let's Encrypt - automatische Erneuerung
-- Pi-hole - DNS-basierter Schutz vor Tracking und Werbung
+- Alle Backend APIs nur auf 127.0.0.1 erreichbar
+- nginx als einzig öffentlicher Entry Point
+- JWT Auth schützt komplettes Dashboard
+- UFW Firewall (nur 80/443 extern)
+- SSH Zugriff nur über Tailscale VPN
+- Fail2ban schützt vor Brute Force Angriffen
+- HTTPS via Let's Encrypt
+- Pi-hole filtert DNS Traffic im Heimnetz
 
 ---
 
 ## Dashboard Features
 
-- Dark Mode + Light Mode Toggle
+- Dark Mode / Light Mode
 - Deutsch / Englisch Sprachumschaltung
-- Live System-Daten (CPU, RAM, Temperatur, Uptime)
-- Energie-Gesamtstatistik seit Inbetriebnahme
-- Pi-hole Live-Stats (Anfragen, Blockrate, Clients)
-- Uptime Monitoring Status Card (Uptime Kuma)
-- Projekt-Portfolio mit Beschreibungen
-- IT-Helpdesk Bot (Floating Chat Widget)
-- Lebenslauf Download
-- Mobile-optimiert
+- Live System Monitoring (CPU, RAM, Temperatur)
+- Energieverbrauch & Kosten Tracking
+- Pi-hole Live Statistik
+- Uptime Monitoring Dashboard
+- Interaktive Netzwerk-Topologie
+- KI Helpdesk Chatbot
+- Mobile optimiertes UI
+
+---
+
+## Infrastruktur
+
+- Raspberry Pi 4 Home Server
+- nginx Reverse Proxy Architektur
+- Docker Container für Monitoring
+- systemd für Service Management
+- Cronjobs für Automatisierung
+- Tailscale VPN für sicheren Remote Zugriff
 
 ---
 
 ## Autor
 
-Ayman El-Toufaili
-Umschüler zum IT-Systemelektroniker
-Praktikum ab September 2026 - Helpdesk, Netzwerktechnik, Systemadministration
+Ayman El-Toufaili  
+Umschüler zum IT-Systemelektroniker  
 
-Gehostet auf eigenem Raspberry Pi 4 - Marl, NRW
+Fokus: Netzwerktechnik, Systemadministration, IT-Security, Home-Lab Infrastruktur
+
+Gehostet auf eigenem Raspberry Pi 4 (NRW, Deutschland)
