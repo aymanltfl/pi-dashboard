@@ -62,7 +62,7 @@ body {
 .main {
   margin-left: 240px;
   padding: 36px 40px 60px;
-  max-width: 1600px;
+  max-width: 1900px;
 }
 
 /* ─── SIDEBAR HEADER ──────────────────────────────────────────────────────────── */
@@ -907,4 +907,16 @@ section {
     border-radius: 7px;
     padding: 6px 10px;
   }
+}
+
+* {
+  outline: none;
+}
+input, textarea {
+  user-select: text;
+}
+
+* {
+  outline: none !important;
+  caret-color: transparent;
 }
