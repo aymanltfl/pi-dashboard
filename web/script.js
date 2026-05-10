@@ -266,6 +266,33 @@ async function loadNetworkData() {
 
 setInterval(loadNetworkData, 30000);
 loadNetworkData();
+// ─── PIHOLE EVENTS ────────────────────────────────────────────────────────────
+let lastBlocked = null;
+
+async function checkPiholeEvents() {
+  try {
+    if (!piholeToken) await getPiholeToken();
+    const res = await fetch("/pihole-api/stats/summary", {
+      headers: { "sid": piholeToken }
+    });
+    if (res.status === 401) { piholeToken = null; return; }
+    const d = await res.json();
+    const blocked = d.queries.blocked;
+    if (lastBlocked !== null && blocked > lastBlocked) {
+      const diff = blocked - lastBlocked;
+      // Mehrere Ripples je nach Anzahl neuer Blocks
+      const count = Math.min(diff, 3);
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => rippleNode("pihole", "#ef4444"), i * 300);
+      }
+    }
+    lastBlocked = blocked;
+  } catch {}
+}
+
+setInterval(checkPiholeEvents, 5000);
+checkPiholeEvents();
+
 // ─── D3 NETWORK DIAGRAM ───────────────────────────────────────────────────────
 function initNetwork() {
   const container = document.getElementById("network-svg");
@@ -303,9 +330,9 @@ const links = [
   // ─── FARBEN ─────────────────────────────────────────────────────────────────
   const groupColors = {
     external: "#ffffff",
-    network:  "#feffaf",
+    network:  "#edf043",
     server:   "#aa3365",
-    service:  "#ff9494",
+    service:  "#951717",
     cloud:    "#444c56"
   };
 
@@ -456,6 +483,28 @@ const links = [
     n.transition().duration(200).attr("r", 32).attr("fill", color)
      .transition().duration(600).attr("r", 28).attr("fill", d => groupColors[d.group] || "#2d7d7d");
   };
+// ─── RIPPLE ─────────────────────────────────────────────────────────────────
+  window.rippleNode = function(nodeId, color) {
+    const targetNode = nodes.find(n => n.id === nodeId);
+    if (!targetNode) return;
+
+    const ripple = svg.append("circle")
+      .attr("cx", targetNode.fx)
+      .attr("cy", targetNode.fy)
+      .attr("r", 28)
+      .attr("fill", "none")
+      .attr("stroke", color)
+      .attr("stroke-width", 2)
+      .attr("opacity", 0.8);
+
+    ripple.transition()
+      .duration(1000)
+      .ease(d3.easeLinear)
+      .attr("r", 60)
+      .attr("opacity", 0)
+      .on("end", () => ripple.remove());
+  };
+
 }
 
 // Init wenn DOM ready
