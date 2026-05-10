@@ -45,9 +45,6 @@ Der Fokus liegt auf einer realistischen Home-Lab Infrastruktur mit IT-typischen 
 - Persistente Speicherung der Verbrauchsdaten in energy_log.json
 - REST API Endpunkt /api/energy_total für Gesamtstatistiken
 
-**Ergebnis:**  
-Transparente und realistischere Energie-Analyse eines Home-Lab Servers mit Fokus auf Nachhaltigkeit und Green IT.
-
 ---
 
 ### Projekt 3 - IT-Helpdesk Bot (KI Integration)
@@ -107,9 +104,6 @@ Transparente und realistischere Energie-Analyse eines Home-Lab Servers mit Fokus
 - Tooltip-System mit dynamischen Gerätedaten
 - Animationen für Netzwerkaktivität und Heartbeat
 - Erweiterbar für zukünftige Monitoring Events
-
-**Ergebnis:**  
-Visuelle Echtzeit-Darstellung der gesamten Infrastruktur für besseres Verständnis komplexer Netzwerkstrukturen.
 
 ---
 
