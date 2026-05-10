@@ -14,9 +14,33 @@ MAX_WATT = 8.0
 LOG_FILE = "/home/raspberrypi/Desktop/pi-dashboard/energy_log.json"
 
 def get_power():
-    load = float(subprocess.check_output(["cat", "/proc/loadavg"]).decode().split()[0])
-    watt = IDLE_WATT + (min(load, 4.0) / 4.0) * (MAX_WATT - IDLE_WATT)
-    return round(watt, 2)
+    try:
+        load = float(subprocess.check_output(["cat", "/proc/loadavg"]).decode().split()[0])
+
+        temp_str = subprocess.check_output(
+            ["vcgencmd", "measure_temp"]
+        ).decode().strip().replace("temp=", "").replace("'C", "")
+        temp = float(temp_str)
+
+        mem = subprocess.check_output(["free", "-m"]).decode().split("\n")[1].split()
+        ram_used = int(mem[2])
+        ram_total = int(mem[1])
+        ram_usage = ram_used / ram_total
+
+        # ─── Gewichtung ─────────────────────────────
+        cpu_factor = min(load / 4.0, 1.0)
+        temp_factor = min((temp - 40) / 40, 1.0)   # ab 40°C steigt Verbrauch
+        ram_factor = ram_usage
+
+        # ─── neue Formel ────────────────────────────
+        usage = (cpu_factor * 0.5) + (temp_factor * 0.3) + (ram_factor * 0.2)
+
+        watt = IDLE_WATT + usage * (MAX_WATT - IDLE_WATT)
+
+        return round(watt, 2)
+
+    except:
+        return IDLE_WATT
 
 def get_uptime_seconds():
     with open("/proc/uptime") as f:
