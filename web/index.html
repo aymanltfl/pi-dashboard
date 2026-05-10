@@ -28,6 +28,10 @@
   </div>
 
   <nav class="sidebar-nav">
+    <a href="#" class="nav-link" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+      <span class="nav-icon">↑</span>
+      <span data-de="Oben" data-en="Top">Oben</span>
+    </a>
     <a href="#system" class="nav-link active">
       <span class="nav-icon">◈</span>
       <span data-de="System" data-en="System">System</span>
@@ -215,18 +219,18 @@
           <span class="project-arrow" id="arrow-p1">▼</span>
         </div>
         <div class="project-body" id="p1">
-          <p data-de="Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux. Öffentlich erreichbar über DuckDNS mit SSL und Portweiterleitung über eine Fritz!Box 7560." data-en="Built a complete home server on Raspberry Pi 4 running Linux. Publicly accessible via DuckDNS with SSL and port forwarding through a Fritz!Box 7560.">Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux. Öffentlich erreichbar über DuckDNS mit SSL und Portweiterleitung über eine Fritz!Box 7560.</p>
+          <p data-de="Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux. Öffentlich erreichbar über eigene Domain (ayman-eltoufaili.de) mit SSL und Portweiterleitung über eine Fritz!Box 7560." data-en="Built a complete home server on Raspberry Pi 4 running Linux. Publicly accessible via custom domain (ayman-eltoufaili.de) with SSL and port forwarding through a Fritz!Box 7560.">Aufbau eines vollständigen Heimservers auf Basis eines Raspberry Pi 4 unter Linux. Öffentlich erreichbar über eigene Domain (ayman-eltoufaili.de) mit SSL und Portweiterleitung über eine Fritz!Box 7560.</p>
           <ul>
             <li data-de="nginx als Webserver und Reverse Proxy" data-en="nginx as web server and reverse proxy">nginx als Webserver und Reverse Proxy</li>
             <li data-de="Python REST-API für Live-Systemdaten (CPU, RAM, Temperatur)" data-en="Python REST-API for live system data (CPU, RAM, Temperature)">Python REST-API für Live-Systemdaten (CPU, RAM, Temperatur)</li>
-            <li data-de="DuckDNS mit automatischem IP-Update via Cronjob alle 5 Minuten" data-en="DuckDNS with automatic IP update via cronjob every 5 minutes">DuckDNS mit automatischem IP-Update via Cronjob alle 5 Minuten</li>
+            <li data-de="Eigene Domain ayman-eltoufaili.de mit automatischem DynDNS Update via Netcup API" data-en="DuckDNS with automatic IP update via cronjob every 5 minutes">Eigene Domain ayman-eltoufaili.de mit automatischem DynDNS Update via Netcup API</li>
             <li data-de="SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv" data-en="SSL certificate with Let's Encrypt – HTTPS active">SSL-Zertifikat mit Let's Encrypt – HTTPS aktiv</li>
             <li data-de="Firewall (UFW) und Fail2ban für SSH-Schutz" data-en="Firewall (UFW) and Fail2ban for SSH protection">Firewall (UFW) und Fail2ban für SSH-Schutz</li>
             <li data-de="Alle Dienste als systemd-Services mit Autostart" data-en="All services as systemd services with autostart">Alle Dienste als systemd-Services mit Autostart</li>
           </ul>
           <div class="project-tags">
             <p class="project-result" data-de="Ergebnis: Stabiler, sicherer Heimserver mit externem Zugriff, automatisierter Verwaltung und professioneller Security-Konfiguration." data-en="Result: Stable, secure home server with external access, automated management and professional security configuration.">Ergebnis: Stabiler, sicherer Heimserver mit externem Zugriff, automatisierter Verwaltung und professioneller Security-Konfiguration.</p>
-            <span class="tag">Raspberry Pi 4</span><span class="tag">Linux</span><span class="tag">nginx</span><span class="tag">Python</span><span class="tag">Bash</span><span class="tag">systemd</span><span class="tag">DuckDNS</span><span class="tag">SSH</span><span class="tag">UFW</span><span class="tag">Fail2ban</span><span class="tag">Let's Encrypt</span>
+            <span class="tag">Raspberry Pi 4</span><span class="tag">Linux</span><span class="tag">nginx</span><span class="tag">Python</span><span class="tag">Bash</span><span class="tag">systemd</span><span class="tag">DuckDNS</span><span class="tag">Netcup</span><span class="tag">DynDNS</span><span class="tag">SSH</span><span class="tag">UFW</span><span class="tag">Fail2ban</span><span class="tag">Let's Encrypt</span>
           </div>
         </div>
       </div>
@@ -410,8 +414,30 @@
   </div>
 </div>
 
+  <div class="project-card">
+      <div class="project-header" onclick="toggleProject('p7')">
+        <div class="project-left">
+          <span class="project-num">07</span>
+          <div>
+            <div class="project-title" data-de="Interaktive Netzwerk-Topologie" data-en="Interactive Network Topology">Interaktive Netzwerk-Topologie</div>
+            <div class="project-tags"><span class="tag">D3.js</span><span class="tag">JavaScript</span><span class="tag">Netzwerk</span></div>
+          </div>
+        </div>
+        <span class="project-arrow" id="arrow-p7">▼</span>
+      </div>
+      <div class="project-body" id="p7">
+        <p data-de="Live Netzwerk-Topologie des Heimservers visualisiert mit D3.js. Zeigt alle Komponenten und deren Verbindungen in Echtzeit — inklusive Pi-hole DNS Events, Traffic Animationen und Heartbeat." data-en="Live network topology of the home server visualized with D3.js. Shows all components and their connections in real time — including Pi-hole DNS events, traffic animations and heartbeat.">Live Netzwerk-Topologie des Heimservers visualisiert mit D3.js. Zeigt alle Komponenten und deren Verbindungen in Echtzeit — inklusive Pi-hole DNS Events, Traffic Animationen und Heartbeat.</p>
+        <ul>
+          <li data-de="Netzwerk-Topologie mit D3.js Force Simulation visualisiert" data-en="Network topology visualized with D3.js force simulation">Netzwerk-Topologie mit D3.js Force Simulation visualisiert</li>
+          <li data-de="Pi-hole DNS Events live dargestellt — geblockte Anfragen als rote Animation" data-en="Pi-hole DNS events displayed live — blocked requests as red animation">Pi-hole DNS Events live dargestellt — geblockte Anfragen als rote Animation</li>
+          <li data-de="Traffic Animationen zeigen DNS Anfragen durch das Netzwerk" data-en="Traffic animations show DNS requests through the network">Traffic Animationen zeigen DNS Anfragen durch das Netzwerk</li>
+          <li data-de="Tooltip zeigt Anzahl aktiver Geräte im Heimnetz" data-en="Tooltip shows number of active devices on the home network">Tooltip zeigt Anzahl aktiver Geräte im Heimnetz</li>
+          <li data-de="Heartbeat Animation alle 30 Sekunden zeigt System ist aktiv" data-en="Heartbeat animation every 30 seconds shows system is active">Heartbeat Animation alle 30 Sekunden zeigt System ist aktiv</li>
+        </ul>
+        <p class="project-result" data-de="Ergebnis: Netzwerkverständnis visuell dargestellt — zeigt wie DNS, Router, Server und Clients zusammenarbeiten." data-en="Result: Network understanding visualized — shows how DNS, router, server and clients work together.">Ergebnis: Netzwerkverständnis visuell dargestellt — zeigt wie DNS, Router, Server und Clients zusammenarbeiten.</p>
+        <div class="project-tags"><span class="tag">D3.js</span><span class="tag">JavaScript</span><span class="tag">Netzwerk</span><span class="tag">DNS</span><span class="tag">Pi-hole</span><span class="tag">Visualisierung</span></div>
+      </div>
     </div>
-  </section>
 
   <div class="mobile-logout">
       <button class="logout-btn" onclick="logout()" data-de="Abmelden" data-en="Logout">Abmelden</button>

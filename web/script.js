@@ -279,13 +279,27 @@ async function checkPiholeEvents() {
     const d = await res.json();
     const blocked = d.queries.blocked;
     if (lastBlocked !== null && blocked > lastBlocked) {
-      const diff = blocked - lastBlocked;
-      // Mehrere Ripples je nach Anzahl neuer Blocks
-      const count = Math.min(diff, 3);
-      for (let i = 0; i < count; i++) {
-        setTimeout(() => rippleNode("pihole", "#ef4444"), i * 300);
-      }
-    }
+  const diff = blocked - lastBlocked;
+  const count = Math.min(diff, 3);
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      networkEmit("local", "fritzbox", "#27ae60", () => {
+        networkEmit("fritzbox", "pi", "#27ae60", () => {
+          networkEmit("pi", "pihole", "#27ae60", () => {
+            rippleNode("pihole", "#ef4444");
+            setTimeout(() => {
+              networkEmit("pihole", "pi", "#ef4444", () => {
+                networkEmit("pi", "fritzbox", "#ef4444", () => {
+                  networkEmit("fritzbox", "local", "#ef4444");
+                });
+              });
+            }, 300);
+          });
+        });
+      });
+    }, i * 500);
+  }
+}
     lastBlocked = blocked;
   } catch {}
 }
@@ -293,6 +307,48 @@ async function checkPiholeEvents() {
 setInterval(checkPiholeEvents, 5000);
 checkPiholeEvents();
 
+// ─── TRAFFIC ANIMATIONS ───────────────────────────────────────────────────────
+let piholeQueriesPerSec = 0;
+let lastTotalQueries = null;
+
+async function updateTrafficRate() {
+  try {
+    if (!piholeToken) await getPiholeToken();
+    const res = await fetch("/pihole-api/stats/summary", {
+      headers: { "sid": piholeToken }
+    });
+    if (res.status === 401) { piholeToken = null; return; }
+    const d = await res.json();
+    const total = d.queries.total;
+    if (lastTotalQueries !== null) {
+      piholeQueriesPerSec = Math.max(0, (total - lastTotalQueries) / 5);
+    }
+    lastTotalQueries = total;
+  } catch {}
+}
+
+setInterval(updateTrafficRate, 5000);
+updateTrafficRate();
+
+function trafficLoop() {
+  const delay = piholeQueriesPerSec > 0
+    ? Math.max(500, 3000 / piholeQueriesPerSec)
+    : 3000;
+
+  setTimeout(() => {
+    // DNS Traffic: Lokale Clients → Fritz!Box → Pi-hole → Internet
+    networkEmit("local", "fritzbox", "#2d7d7d", () => {
+      networkEmit("fritzbox", "pi", "#2d7d7d", () => {
+        networkEmit("pi", "pihole", "#27ae60", () => {
+          networkEmit("pihole", "internet", "#27ae60");
+        });
+      });
+    });
+    trafficLoop();
+  }, delay);
+}
+
+trafficLoop();
 // ─── D3 NETWORK DIAGRAM ───────────────────────────────────────────────────────
 function initNetwork() {
   const container = document.getElementById("network-svg");
@@ -325,6 +381,7 @@ const links = [
     { source: "pi",       target: "pihole",   type: "service" },
     { source: "local",    target: "fritzbox", type: "lan"     },
     { source: "fritzbox", target: "pi",       type: "lan"     },
+    
 ];
 
   // ─── FARBEN ─────────────────────────────────────────────────────────────────
@@ -457,23 +514,26 @@ const links = [
   setInterval(heartbeat, 30000);
 
   // ─── PARTICLE FLOW ──────────────────────────────────────────────────────────
-  window.networkEmit = function(sourceId, targetId, color) {
-    const sourceNode = nodes.find(n => n.id === sourceId);
-    const targetNode = nodes.find(n => n.id === targetId);
-    if (!sourceNode || !targetNode) return;
+  window.networkEmit = function(sourceId, targetId, color, callback) {
+      const sourceNode = nodes.find(n => n.id === sourceId);
+      const targetNode = nodes.find(n => n.id === targetId);
+      if (!sourceNode || !targetNode) return;
 
-    const particle = svg.append("circle")
-      .attr("r", 5)
-      .attr("fill", color || "#2d7d7d")
-      .attr("cx", sourceNode.x)
-      .attr("cy", sourceNode.y);
+      const particle = svg.append("circle")
+        .attr("r", 4)
+        .attr("fill", color || "#2d7d7d")
+        .attr("cx", sourceNode.fx)
+        .attr("cy", sourceNode.fy);
 
-    particle.transition()
-      .duration(1000)
-      .ease(d3.easeLinear)
-      .attr("cx", targetNode.x)
-      .attr("cy", targetNode.y)
-      .on("end", () => particle.remove());
+      particle.transition()
+        .duration(800)
+        .ease(d3.easeLinear)
+        .attr("cx", targetNode.fx)
+        .attr("cy", targetNode.fy)
+        .on("end", () => {
+          particle.remove();
+          if (callback) callback();
+        });
   };
 
   // ─── NODE PULSE ─────────────────────────────────────────────────────────────
