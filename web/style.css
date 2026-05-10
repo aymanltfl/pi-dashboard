@@ -62,7 +62,7 @@ body {
 .main {
   margin-left: 240px;
   padding: 36px 40px 60px;
-  max-width: 1100px;
+  max-width: 1600px;
 }
 
 /* ─── SIDEBAR HEADER ──────────────────────────────────────────────────────────── */
@@ -892,4 +892,19 @@ section {
 #network-svg {
   display: block;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .network-card {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-info a.ctrl-btn {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 7px;
+    padding: 6px 10px;
+  }
 }

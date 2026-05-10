@@ -355,8 +355,9 @@ function initNetwork() {
   if (!container) return;
 
   const rect = container.parentElement.getBoundingClientRect();
-  const width = rect.width - 55;
-  const height = 300;
+  const isMobile = window.innerWidth <= 768;
+  const width = rect.width - (isMobile ? 16 : 55);
+  const height = isMobile ? 250 : 300;
 
   const svg = d3.select("#network-svg")
     .attr("width", width)
@@ -365,10 +366,10 @@ function initNetwork() {
   // ─── NODES ──────────────────────────────────────────────────────────────────
 
 const nodes = [
-    { id: "visitor",  label: "Web Besucher",  group: "external", icon: "👤", fx: width*0.15, fy: height*0.2 },
-    { id: "internet", label: "Internet",       group: "external", icon: "🌐", fx: width*0.5,  fy: height*0.2 },
+    { id: "visitor",  label: "Web Client",     group: "external", icon: "👤", fx: width*0.15, fy: height*0.2 },
+    { id: "internet", label: "WAN",            group: "external", icon: "🌐", fx: width*0.5,  fy: height*0.2 },
     { id: "pihole",   label: "Pi-hole",        group: "service",  icon: "🛡", fx: width*0.9,  fy: height*0.2 },
-    { id: "local",    label: "Lokale Clients", group: "external", icon: "🏠", fx: width*0.2, fy: height*0.8 },
+    { id: "local",    label: "LAN",            group: "external", icon: "🏠", fx: width*0.15, fy: height*0.8 },
     { id: "fritzbox", label: "Fritz!Box",      group: "network",  icon: "📡", fx: width*0.5,  fy: height*0.8 },
     { id: "pi",       label: "Raspberry Pi",   group: "server",   icon: "🖥",  fx: width*0.9,  fy: height*0.8 },
 ];
@@ -573,3 +574,7 @@ if (document.readyState === "loading") {
 } else {
   initNetwork();
 }
+window.addEventListener("resize", () => {
+  d3.select("#network-svg").selectAll("*").remove();
+  initNetwork();
+});
