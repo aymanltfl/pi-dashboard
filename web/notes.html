@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes – Ayman El-Toufaili</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.note-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.note-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.note-date {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text2);
+  margin-bottom: 10px;
+}
+
+.note-content {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.75;
+  margin-bottom: 12px;
+}
+
+.note-image {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+}
+
+.note-id {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text2);
+  font-size: 0.88rem;
+  padding: 60px 20px;
+  font-family: var(--mono);
+}
+</style>
+</head>
+<body class="dark">
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-avatar">AE</div>
+    <div>
+      <div class="sidebar-name">Ayman El-Toufaili</div>
+      <div class="sidebar-role">IT-Systemelektroniker</div>
+    </div>
+  </div>
+
+  <div class="sidebar-status">
+    <span class="pulse-dot"></span>
+    <span class="sidebar-status-text">Pi online · Marl, NRW</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/" class="nav-link">
+      <span class="nav-icon">◈</span>
+      <span>Dashboard</span>
+    </a>
+    <a href="/cv" class="nav-link">
+      <span class="nav-icon">◇</span>
+      <span>Lebenslauf</span>
+    </a>
+    <a href="/notes" class="nav-link active">
+      <span class="nav-icon">◉</span>
+      <span>Notes</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="/Lebenslauf_Ayman_El-Toufaili.pdf" download="Ayman_El-Toufaili_CV.pdf" target="_blank" class="github-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+      Lebenslauf
+    </a>
+    <a href="https://github.com/aymanltfl/pi-dashboard" target="_blank" class="github-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+    <div class="sidebar-badge">Praktikum ab Sept. 2026</div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Lerntagebuch</h1>
+      <p class="page-sub">IT-Notizen aus Unterricht und Praxis · via Telegram Bot</p>
+    </div>
+  </header>
+
+  <div id="notes-container">
+    <div class="empty-state">Notizen werden geladen...</div>
+  </div>
+</main>
+
+<script>
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "light") {
+  document.body.classList.remove("dark");
+}
+
+async function loadNotes() {
+  try {
+    const res = await fetch("/notes-data/notes.json");
+    const data = await res.json();
+    const container = document.getElementById("notes-container");
+
+    if (!data.entries || data.entries.length === 0) {
+      container.innerHTML = '<div class="empty-state">Noch keine Notizen vorhanden.<br>Schick eine Nachricht an den Telegram Bot!</div>';
+      return;
+    }
+
+    const entries = [...data.entries].reverse();
+
+    container.innerHTML = '<div class="notes-grid">' +
+      entries.map(e => `
+        <div class="note-card">
+          <div class="note-id">#${e.id}</div>
+          <div class="note-date">${e.date} · ${e.time}</div>
+          <div class="note-content">${e.content}</div>
+          ${e.image ? `<img src="/notes-data/images/${e.image}" class="note-image" alt="Notiz Bild">` : ""}
+        </div>
+      `).join("") +
+    "</div>";
+  } catch {
+    document.getElementById("notes-container").innerHTML =
+      '<div class="empty-state">Fehler beim Laden der Notizen.</div>';
+  }
+}
+
+loadNotes();
+</script>
+</body>
+</html>
