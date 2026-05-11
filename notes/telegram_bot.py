@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv("/home/raspberrypi/Desktop/pi-dashboard/.env")
 
-BOT_TOKEN = "8634663300:AAEX57LRRB1Elx_s5X8MfrD85zE-ru7ntws"
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 ALLOWED_USER_ID = 8535941521  # Deine Telegram User ID
 NOTES_FILE = "/home/raspberrypi/Desktop/pi-dashboard/notes/notes.json"
 IMAGES_DIR = "/home/raspberrypi/Desktop/pi-dashboard/notes/images"
