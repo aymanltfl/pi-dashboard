@@ -2,20 +2,11 @@
   "entries": [
     {
       "id": 1,
-      "date": "11.05.2026",
-      "time": "20:15",
-      "content": "Heute habe ich im Unterricht mit dem Windows Server gearbeitet. Ein Hyper-V-Server wurde erfolgreich eingerichtet und ein Netzwerk in Betrieb genommen. Alle Geräte erhalten nun über DHCP eine IP-Adresse und haben Zugang zum Internet.",
-      "original": "Heute habe ich im Unterricht mit dem windows server gearbeitet.. Hyperserver eingerichtet und ein netzwerk zum laufe gebracht (alle geräte haben internet und bekommen eine ip über DHCP",
-      "image": null,
-      "tags": []
-    },
-    {
-      "id": 2,
-      "date": "11.05.2026",
-      "time": "20:38",
-      "content": "Der Telegram-Bot ermöglicht nun das direkte Hochladen meiner Notizen auf meine Seite. Zusätzlich besteht die Möglichkeit, Bilder einzufügen. Der Funktionsumfang wurde erfolgreich getestet.",
-      "original": "Der Telegram Bot kann jetzt meine notizen direkt auf meine seite hochladen. ich kann auch bilder einfügen... test test",
-      "image": "img_2_20260511_203823.jpg",
+      "date": "12.05.2026",
+      "time": "11:27",
+      "content": "",
+      "original": "",
+      "image": "img_1_20260512_112735.jpg",
       "tags": []
     }
   ]

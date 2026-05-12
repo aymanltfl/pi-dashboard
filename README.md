@@ -103,7 +103,22 @@ Der Fokus liegt auf einer realistischen Home-Lab Infrastruktur mit IT-typischen 
 - Visualisierung von Clients, Servern, DNS und Cloud Services
 - Tooltip-System mit dynamischen Gerätedaten
 - Animationen für Netzwerkaktivität und Heartbeat
-- Erweiterbar für zukünftige Monitoring Events
+- Pi-hole DNS Events live dargestellt (geblockte Anfragen als rote Animation)
+
+---
+
+### Projekt 8 - Lerntagebuch & Telegram Notes Bot
+
+- Persönlicher Telegram Bot als mobiles CMS für Lernnotizen
+- Notizen und Fotos werden direkt per Telegram erfasst
+- Groq API (LLaMA 3) verbessert Texte automatisch vor der Speicherung
+- Persistente Speicherung aller Einträge in einer lokalen JSON-Datenbank
+- Bildnotizen werden serverseitig gespeichert und in der Notes-Seite angezeigt
+- Bot läuft als systemd Service mit Autostart
+- Notes-Seite zeigt alle Einträge chronologisch als Karten-Layout
+- Interne Zugriffspunkte, Bot-Tokens und Pfade werden bewusst nicht öffentlich dokumentiert
+
+> **Sicherheitshinweis:** Bot-Token, interne Routen und Zugangsdaten sind nicht Teil dieser Dokumentation und werden nicht im Repository hinterlegt. Sensible Konfiguration erfolgt ausschließlich über Umgebungsvariablen (.env).
 
 ---
 
@@ -122,6 +137,7 @@ Der Fokus liegt auf einer realistischen Home-Lab Infrastruktur mit IT-typischen 
 | KI | Groq API, LLaMA 3 |
 | Container | Docker, Uptime Kuma |
 | Visualisierung | D3.js |
+| Messaging | Telegram Bot API |
 | Versionskontrolle | Git, GitHub |
 | Automatisierung | systemd, Cronjobs |
 
@@ -149,6 +165,8 @@ Internet → Domain (ayman-eltoufaili.de) → Fritz!Box 7560 → Raspberry Pi 4 
 - /api/chat → KI Helpdesk Bot
 - /api/network → Netzwerk Topologie Daten
 
+> Interne Datenpfade und Notes-Endpunkte werden bewusst nicht öffentlich dokumentiert.
+
 ---
 
 ## Sicherheit
@@ -161,6 +179,8 @@ Internet → Domain (ayman-eltoufaili.de) → Fritz!Box 7560 → Raspberry Pi 4 
 - Fail2ban schützt vor Brute Force Angriffen
 - HTTPS via Let's Encrypt
 - Pi-hole filtert DNS Traffic im Heimnetz
+- Sensible Zugangsdaten ausschließlich in .env (nicht im Repository)
+- Interne Routen und Bot-Konfiguration nicht öffentlich dokumentiert
 
 ---
 
@@ -172,8 +192,9 @@ Internet → Domain (ayman-eltoufaili.de) → Fritz!Box 7560 → Raspberry Pi 4 
 - Energieverbrauch & Kosten Tracking
 - Pi-hole Live Statistik
 - Uptime Monitoring Dashboard
-- Interaktive Netzwerk-Topologie
+- Interaktive Netzwerk-Topologie (D3.js)
 - KI Helpdesk Chatbot
+- Lerntagebuch (Notes-Seite)
 - Mobile optimiertes UI
 
 ---
@@ -183,7 +204,7 @@ Internet → Domain (ayman-eltoufaili.de) → Fritz!Box 7560 → Raspberry Pi 4 
 - Raspberry Pi 4 Home Server
 - nginx Reverse Proxy Architektur
 - Docker Container für Monitoring
-- systemd für Service Management
+- systemd für Service Management (inkl. Telegram Bot Service)
 - Cronjobs für Automatisierung
 - Tailscale VPN für sicheren Remote Zugriff
 
