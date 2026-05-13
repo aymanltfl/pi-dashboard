@@ -43,7 +43,14 @@ def improve_text(text):
             model="llama-3.3-70b-versatile",
             messages=[{
                 "role": "user",
-                "content": f"Formuliere diese IT-Lernnotiz professioneller und klarer, behalte den Inhalt bei, antworte nur mit dem verbesserten Text ohne Erklärungen:\n\n{text}"
+                "content": f"""Du bist mein persönlicher Notiz-Assistent.
+
+Deine Aufgabe:
+1. Schreibe den Text leicht verbessert aber KURZ — erfinde nichts dazu
+2. Behalte den originalen Inhalt bei — kein Roman, keine Ausschmückungen
+
+Hier ist meine Notiz:
+{text}"""
             }]
         )
         return response.choices[0].message.content
