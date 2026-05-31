@@ -14,21 +14,27 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 ALLOWED_USER_ID = 8535941521
 NOTES_FILE = "/home/raspberrypi/Desktop/pi-dashboard/notes/notes.json"
 IMAGES_DIR = "/home/raspberrypi/Desktop/pi-dashboard/notes/images"
+DEVICES_FILE = "/home/raspberrypi/Desktop/pi-dashboard/notes/known_devices.json"
 API_BASE = "http://127.0.0.1:5000"
 
-# ─── ALERT SCHWELLWERTE ───────────────────────────────────────────────────────
-CPU_THRESHOLD    = 2.5   # CPU Load (nicht %)
-TEMP_THRESHOLD   = 70.0  # °C
-RAM_THRESHOLD    = 90.0  # %
+CPU_THRESHOLD  = 2.5
+TEMP_THRESHOLD = 70.0
+RAM_THRESHOLD  = 90.0
 
 os.makedirs(IMAGES_DIR, exist_ok=True)
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 logging.basicConfig(level=logging.INFO)
 
-# ─── BEKANNTE GERÄTE ──────────────────────────────────────────────────────────
-known_devices = set()
+def load_devices():
+    if os.path.exists(DEVICES_FILE):
+        with open(DEVICES_FILE) as f:
+            return json.load(f)
+    return {}
 
-# ─── NOTES HELPERS ────────────────────────────────────────────────────────────
+def save_devices(data):
+    with open(DEVICES_FILE, "w") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
 def load_notes():
     with open(NOTES_FILE) as f:
         return json.load(f)
@@ -57,7 +63,6 @@ Hier ist meine Notiz:
     except:
         return text
 
-# ─── API HELPERS ──────────────────────────────────────────────────────────────
 def fetch_api(path):
     try:
         res = urllib.request.urlopen(f"{API_BASE}{path}", timeout=5)
@@ -65,24 +70,25 @@ def fetch_api(path):
     except:
         return None
 
-# ─── AUTH ─────────────────────────────────────────────────────────────────────
 async def check_user(update: Update) -> bool:
     if update.effective_user.id != ALLOWED_USER_ID:
         await update.message.reply_text("Nicht autorisiert!")
         return False
     return True
 
-# ─── COMMANDS ─────────────────────────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_user(update): return
     await update.message.reply_text(
         "Pi Notes Bot bereit!\n\n"
-        "Schick mir einfach Text oder Fotos.\n\n"
-        "Befehle:\n"
-        "/list — alle Einträge anzeigen\n"
+        "Notizen:\n"
+        "/list — alle Einträge\n"
         "/delete <nr> — Eintrag löschen\n"
-        "/deleteall — alle Einträge löschen\n"
-        "/status — Pi Status abrufen"
+        "/deleteall — alle löschen\n\n"
+        "Netzwerk:\n"
+        "/status — Pi Status\n"
+        "/devices — Geräte im Netz\n"
+        "/name <mac> <name> — Gerät benennen\n"
+        "  Beispiel: /name aa:bb:cc:dd:ee:ff Mamas Handy"
     )
 
 async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -90,26 +96,22 @@ async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     d = fetch_api("/api/status")
     e = fetch_api("/api/energy_total")
     n = fetch_api("/api/network")
-
     if not d:
         await update.message.reply_text("❌ Pi API nicht erreichbar!")
         return
-
     ram_pct = round((d["ram_used"] / d["ram_total"]) * 100)
-
     services = ""
     if n and "services" in n:
         for svc, active in n["services"].items():
             icon = "✅" if active else "❌"
-            services += f"{icon} {svc}\n"
-
+            services += f"  {icon} {svc}\n"
     energy = ""
     if e:
         energy = (
             f"\n⚡ Energie seit {e['start_date']}:\n"
+            f"  Laufzeit: {e['runtime']}\n"
             f"  {e['total_kwh']} kWh · {e['total_cost']} € · {round(e['total_co2']*1000,1)}g CO₂\n"
         )
-
     msg = (
         f"📊 Pi Status\n"
         f"━━━━━━━━━━━━━━━━\n"
@@ -121,83 +123,108 @@ async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     await update.message.reply_text(msg)
 
-# ─── ALERTS ───────────────────────────────────────────────────────────────────
+async def devices_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_user(update): return
+    n = fetch_api("/api/network")
+    if not n:
+        await update.message.reply_text("❌ Netzwerk nicht erreichbar!")
+        return
+    known = load_devices()
+    devices = n.get("devices", [])
+    if not devices:
+        await update.message.reply_text("Keine Geräte gefunden.")
+        return
+    msg = f"📱 Geräte im Netzwerk ({len(devices)} aktiv)\n━━━━━━━━━━━━━━━━\n"
+    for dev in devices:
+        mac = dev.get("mac", "")
+        ip = dev.get("ip", "")
+        hostname = dev.get("hostname", "")
+        if mac in known and known[mac].get("name"):
+            name = known[mac]["name"]
+        elif hostname and hostname != "?":
+            name = hostname
+        else:
+            name = mac
+        msg += f"✅ {name}\n     {ip} · {mac}\n"
+    msg += "\nTipp: /name <mac> <name> zum Benennen"
+    await update.message.reply_text(msg)
+
+async def name_device(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_user(update): return
+    if len(context.args) < 2:
+        await update.message.reply_text(
+            "Verwendung: /name <mac> <name>\n"
+            "Beispiel: /name aa:bb:cc:dd:ee:ff Mamas Handy"
+        )
+        return
+    mac = context.args[0].lower()
+    name = " ".join(context.args[1:])
+    known = load_devices()
+    known[mac] = {"name": name, "added": datetime.now().strftime("%d.%m.%Y %H:%M")}
+    save_devices(known)
+    await update.message.reply_text(f"✅ Gerät gespeichert!\n{mac} → {name}")
+
 async def check_alerts(context: ContextTypes.DEFAULT_TYPE):
     d = fetch_api("/api/status")
     n = fetch_api("/api/network")
-    global known_devices
-
     if not d:
-        await context.bot.send_message(
-            chat_id=ALLOWED_USER_ID,
-            text="❌ Pi API nicht erreichbar! Services möglicherweise ausgefallen."
-        )
+        await context.bot.send_message(chat_id=ALLOWED_USER_ID, text="❌ Pi API nicht erreichbar!")
         return
-
-    # CPU Alert
     if d["cpu_load"] >= CPU_THRESHOLD:
-        await context.bot.send_message(
-            chat_id=ALLOWED_USER_ID,
-            text=f"⚠️ CPU Load hoch: {d['cpu_load']} (Schwelle: {CPU_THRESHOLD})"
-        )
-
-    # Temperatur Alert
+        await context.bot.send_message(chat_id=ALLOWED_USER_ID, text=f"⚠️ CPU Load hoch: {d['cpu_load']}")
     if d["temp"] >= TEMP_THRESHOLD:
-        await context.bot.send_message(
-            chat_id=ALLOWED_USER_ID,
-            text=f"🌡️ Temperatur kritisch: {d['temp']} °C (Schwelle: {TEMP_THRESHOLD} °C)"
-        )
-
-    # RAM Alert
+        await context.bot.send_message(chat_id=ALLOWED_USER_ID, text=f"🌡️ Temperatur kritisch: {d['temp']} °C")
     ram_pct = round((d["ram_used"] / d["ram_total"]) * 100)
     if ram_pct >= RAM_THRESHOLD:
-        await context.bot.send_message(
-            chat_id=ALLOWED_USER_ID,
-            text=f"💾 RAM fast voll: {ram_pct}% ({d['ram_used']}/{d['ram_total']} MB)"
-        )
-
-    # Services Alert
+        await context.bot.send_message(chat_id=ALLOWED_USER_ID, text=f"💾 RAM fast voll: {ram_pct}%")
     if n and "services" in n:
         for svc, active in n["services"].items():
             if not active:
-                await context.bot.send_message(
-                    chat_id=ALLOWED_USER_ID,
-                    text=f"❌ Service ausgefallen: {svc}"
-                )
-
-    # Neue Geräte im Netzwerk
+                await context.bot.send_message(chat_id=ALLOWED_USER_ID, text=f"❌ Service ausgefallen: {svc}")
     if n and "devices" in n:
-        current_ips = set(dev["ip"] for dev in n["devices"])
-        if known_devices:
-            new_devices = current_ips - known_devices
-            for ip in new_devices:
+        known = load_devices()
+        for dev in n["devices"]:
+            mac = dev.get("mac", "")
+            ip = dev.get("ip", "")
+            hostname = dev.get("hostname", "")
+            if not mac:
+                continue
+            if mac not in known:
+                name = hostname if hostname and hostname != "?" else mac
                 await context.bot.send_message(
                     chat_id=ALLOWED_USER_ID,
-                    text=f"👀 Neues Gerät im Netzwerk: {ip}"
+                    text=(
+                        f"👀 Neues Gerät im Netzwerk!\n"
+                        f"  Name: {name}\n"
+                        f"  IP: {ip}\n"
+                        f"  MAC: {mac}\n\n"
+                        f"Benennen: /name {mac} Mein Gerät"
+                    )
                 )
-        known_devices = current_ips
+                known[mac] = {
+                    "name": "",
+                    "hostname": hostname,
+                    "first_seen": datetime.now().strftime("%d.%m.%Y %H:%M"),
+                    "last_ip": ip
+                }
+            else:
+                known[mac]["last_ip"] = ip
+                known[mac]["last_seen"] = datetime.now().strftime("%d.%m.%Y %H:%M")
+        save_devices(known)
 
-# ─── TÄGLICHE ZUSAMMENFASSUNG ─────────────────────────────────────────────────
 async def daily_summary(context: ContextTypes.DEFAULT_TYPE):
     d = fetch_api("/api/status")
     e = fetch_api("/api/energy_total")
     n = fetch_api("/api/network")
-
     if not d:
-        await context.bot.send_message(
-            chat_id=ALLOWED_USER_ID,
-            text="❌ Tägliche Zusammenfassung fehlgeschlagen — Pi nicht erreichbar."
-        )
+        await context.bot.send_message(chat_id=ALLOWED_USER_ID, text="❌ Tägliche Zusammenfassung fehlgeschlagen.")
         return
-
     ram_pct = round((d["ram_used"] / d["ram_total"]) * 100)
-
     services = ""
     if n and "services" in n:
         for svc, active in n["services"].items():
             icon = "✅" if active else "❌"
             services += f"  {icon} {svc}\n"
-
     energy = ""
     if e:
         energy = (
@@ -205,9 +232,7 @@ async def daily_summary(context: ContextTypes.DEFAULT_TYPE):
             f"  Laufzeit: {e['runtime']}\n"
             f"  {e['total_kwh']} kWh · {e['total_cost']} € · {round(e['total_co2']*1000,1)}g CO₂\n"
         )
-
     devices_count = len(n["devices"]) if n and "devices" in n else "?"
-
     msg = (
         f"☀️ Guten Morgen! Pi Tagesbericht\n"
         f"━━━━━━━━━━━━━━━━\n"
@@ -220,7 +245,6 @@ async def daily_summary(context: ContextTypes.DEFAULT_TYPE):
     )
     await context.bot.send_message(chat_id=ALLOWED_USER_ID, text=msg)
 
-# ─── NOTES HANDLERS ───────────────────────────────────────────────────────────
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_user(update): return
     text = update.message.text
@@ -301,24 +325,20 @@ async def delete_all(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_notes(notes)
     await update.message.reply_text("✅ Alle Notizen gelöscht!")
 
-# ─── APP ──────────────────────────────────────────────────────────────────────
 app = Application.builder().token(BOT_TOKEN).build()
-
-# Commands
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("list", list_notes))
 app.add_handler(CommandHandler("delete", delete_note))
 app.add_handler(CommandHandler("deleteall", delete_all))
 app.add_handler(CommandHandler("status", status_command))
-
-# Messages
+app.add_handler(CommandHandler("devices", devices_command))
+app.add_handler(CommandHandler("name", name_device))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 
-# Jobs
 job_queue = app.job_queue
-job_queue.run_repeating(check_alerts, interval=300, first=10)       # Alerts alle 5 Min
-job_queue.run_daily(daily_summary, time=datetime.strptime("08:00", "%H:%M").time())  # Täglich 8 Uhr
+job_queue.run_repeating(check_alerts, interval=300, first=10)
+job_queue.run_daily(daily_summary, time=datetime.strptime("08:00", "%H:%M").time())
 
 print("Bot startet...")
 app.run_polling()

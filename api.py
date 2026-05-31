@@ -7,38 +7,78 @@ import time
 import urllib.request
 import socket
 from datetime import datetime
+import re
 
 STROMPREIS = 0.30
 IDLE_WATT = 3.0
 MAX_WATT = 8.0
 LOG_FILE = "/home/raspberrypi/Desktop/pi-dashboard/energy_log.json"
 
+# ─── NMAP CACHE ───────────────────────────────────────────────────────────────
+network_cache = {"devices": [], "device_count": 0, "services": {}}
+network_cache_lock = threading.Lock()
+
+def update_network_cache():
+    while True:
+        try:
+            nmap_out = subprocess.check_output(
+                ["sudo", "nmap", "-sn", "192.168.178.0/24", "--oG", "-"],
+                stderr=subprocess.DEVNULL
+            ).decode()
+            arp_out = subprocess.check_output(["arp", "-a"], stderr=subprocess.DEVNULL).decode()
+            mac_table = {}
+            for line in arp_out.split("\n"):
+                ip_match = re.search(r"\(([\d\.]+)\)", line)
+                mac_match = re.search(r"([0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})", line)
+                if ip_match and mac_match:
+                    mac_table[ip_match.group(1)] = mac_match.group(1)
+            devices = []
+            for line in nmap_out.split("\n"):
+                if "Host:" not in line or "Status: Up" not in line:
+                    continue
+                ip_match = re.search(r"Host:\s+([\d\.]+)", line)
+                hostname_match = re.search(r"\((.*?)\)", line)
+                if ip_match:
+                    ip = ip_match.group(1)
+                    if ip == "192.168.178.90":
+                        continue
+                    hostname = hostname_match.group(1) if hostname_match else ""
+                    mac = mac_table.get(ip, "")
+                    devices.append({"ip": ip, "mac": mac, "hostname": hostname})
+            services = {}
+            for svc in ["nginx", "pi-api", "pi-helpdesk", "pi-auth", "pihole-FTL"]:
+                try:
+                    out = subprocess.check_output(["systemctl", "is-active", svc], stderr=subprocess.DEVNULL).decode().strip()
+                    services[svc] = out == "active"
+                except:
+                    services[svc] = False
+            with network_cache_lock:
+                network_cache["devices"] = devices
+                network_cache["device_count"] = len(devices)
+                network_cache["services"] = services
+        except:
+            pass
+        time.sleep(120)  # alle 2 Minuten
+
+network_thread = threading.Thread(target=update_network_cache, daemon=True)
+network_thread.start()
+
+# ─── POWER ────────────────────────────────────────────────────────────────────
 def get_power():
     try:
         load = float(subprocess.check_output(["cat", "/proc/loadavg"]).decode().split()[0])
-
-        temp_str = subprocess.check_output(
-            ["vcgencmd", "measure_temp"]
-        ).decode().strip().replace("temp=", "").replace("'C", "")
+        temp_str = subprocess.check_output(["vcgencmd", "measure_temp"]).decode().strip().replace("temp=", "").replace("'C", "")
         temp = float(temp_str)
-
         mem = subprocess.check_output(["free", "-m"]).decode().split("\n")[1].split()
         ram_used = int(mem[2])
         ram_total = int(mem[1])
         ram_usage = ram_used / ram_total
-
-        # ─── Gewichtung ─────────────────────────────
         cpu_factor = min(load / 4.0, 1.0)
-        temp_factor = min((temp - 40) / 40, 1.0)   # ab 40°C steigt Verbrauch
+        temp_factor = min((temp - 40) / 40, 1.0)
         ram_factor = ram_usage
-
-        # ─── neue Formel ────────────────────────────
         usage = (cpu_factor * 0.5) + (temp_factor * 0.3) + (ram_factor * 0.2)
-
         watt = IDLE_WATT + usage * (MAX_WATT - IDLE_WATT)
-
         return round(watt, 2)
-
     except:
         return IDLE_WATT
 
@@ -50,11 +90,7 @@ def load_log():
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE) as f:
             return json.load(f)
-    return {
-        "total_wh": 0.0,
-        "total_minutes": 0,
-        "start_date": datetime.now().strftime("%d.%m.%Y")
-    }
+    return {"total_wh": 0.0, "total_minutes": 0, "start_date": datetime.now().strftime("%d.%m.%Y")}
 
 def save_log(data):
     with open(LOG_FILE, "w") as f:
@@ -72,51 +108,10 @@ def energy_tracker():
         except:
             pass
 
-def check_http(url):
-    try:
-        start = time.time()
-        req = urllib.request.urlopen(url, timeout=5)
-        ms = round((time.time() - start) * 1000)
-        return {"status": "online", "ms": ms, "code": req.getcode()}
-    except:
-        return {"status": "offline", "ms": None, "code": None}
-
-def check_ping(host):
-    try:
-        start = time.time()
-        socket.setdefaulttimeout(3)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, 53))
-        ms = round((time.time() - start) * 1000)
-        return {"status": "online", "ms": ms}
-    except:
-        return {"status": "offline", "ms": None}
-
-def check_systemd(service):
-    try:
-        result = subprocess.check_output(
-            ["systemctl", "is-active", service]
-        ).decode().strip()
-        return {"status": "online" if result == "active" else "offline"}
-    except:
-        return {"status": "offline"}
-
-def check_ssl():
-    try:
-        result = subprocess.check_output(
-            ["certbot", "certificates"],
-            stderr=subprocess.STDOUT
-        ).decode()
-        if "2026" in result or "2027" in result:
-            for line in result.split("\n"):
-                if "Expiry Date" in line:
-                    return {"status": "online", "info": line.strip().replace("Expiry Date: ", "")}
-        return {"status": "online", "info": "gültig"}
-    except:
-        return {"status": "online", "info": "gültig"}
-
 tracker = threading.Thread(target=energy_tracker, daemon=True)
 tracker.start()
 
+# ─── HTTP HANDLER ─────────────────────────────────────────────────────────────
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
@@ -124,21 +119,10 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/api/status":
             try:
-                temp = subprocess.check_output(
-                    ["vcgencmd", "measure_temp"]
-                ).decode().strip().replace("temp=", "").replace("'C", "")
-                load = subprocess.check_output(
-                    ["cat", "/proc/loadavg"]
-                ).decode().split()[0]
-                mem = subprocess.check_output(
-                    ["free", "-m"]
-                ).decode().split("\n")[1].split()
-                data = {
-                    "temp": float(temp),
-                    "cpu_load": float(load),
-                    "ram_used": int(mem[2]),
-                    "ram_total": int(mem[1])
-                }
+                temp = subprocess.check_output(["vcgencmd", "measure_temp"]).decode().strip().replace("temp=", "").replace("'C", "")
+                load = subprocess.check_output(["cat", "/proc/loadavg"]).decode().split()[0]
+                mem = subprocess.check_output(["free", "-m"]).decode().split("\n")[1].split()
+                data = {"temp": float(temp), "cpu_load": float(load), "ram_used": int(mem[2]), "ram_total": int(mem[1])}
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
                 self.end_headers()
@@ -173,12 +157,7 @@ class Handler(BaseHTTPRequestHandler):
                 cost_per_day = round(kwh_per_day * STROMPREIS, 4)
                 cost_per_month = round(kwh_per_month * STROMPREIS, 2)
                 co2_per_day = round(kwh_per_day * 0.4, 4)
-                data = {
-                    "watt": watt,
-                    "cost_per_day": cost_per_day,
-                    "cost_per_month": cost_per_month,
-                    "co2_per_day": co2_per_day
-                }
+                data = {"watt": watt, "cost_per_day": cost_per_day, "cost_per_month": cost_per_month, "co2_per_day": co2_per_day}
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
                 self.end_headers()
@@ -199,13 +178,7 @@ class Handler(BaseHTTPRequestHandler):
                 hours = (total_mins % 1440) // 60
                 minutes = total_mins % 60
                 runtime = f"{days:02d}:{hours:02d}:{minutes:02d}"
-                data = {
-                    "runtime": runtime,
-                    "total_kwh": total_kwh,
-                    "total_cost": total_cost,
-                    "total_co2": total_co2,
-                    "start_date": log["start_date"]
-                }
+                data = {"runtime": runtime, "total_kwh": total_kwh, "total_cost": total_cost, "total_co2": total_co2, "start_date": log["start_date"]}
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
                 self.end_headers()
@@ -217,23 +190,8 @@ class Handler(BaseHTTPRequestHandler):
 
         elif self.path == "/api/network":
             try:
-                import re
-                arp = subprocess.check_output(["arp", "-a"], stderr=subprocess.DEVNULL).decode()
-                devices = []
-                for line in arp.split("\n"):
-                    match = re.search(r"\(([\d\.]+)\)", line)
-                    if match:
-                        ip = match.group(1)
-                        if not ip.startswith("169") and not ip.startswith("255"):
-                            devices.append({"ip": ip})
-                services = {}
-                for svc in ["nginx", "pi-api", "pi-helpdesk", "pi-auth", "pihole-FTL"]:
-                    try:
-                        out = subprocess.check_output(["systemctl", "is-active", svc], stderr=subprocess.DEVNULL).decode().strip()
-                        services[svc] = out == "active"
-                    except:
-                        services[svc] = False
-                data = {"devices": devices, "device_count": len(devices), "services": services}
+                with network_cache_lock:
+                    data = dict(network_cache)
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
                 self.send_header("Access-Control-Allow-Origin", "*")
