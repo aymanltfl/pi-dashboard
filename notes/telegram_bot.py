@@ -2,7 +2,7 @@ import os
 import json
 import logging
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from groq import Groq
@@ -21,6 +21,13 @@ CPU_THRESHOLD  = 2.5
 TEMP_THRESHOLD = 70.0
 RAM_THRESHOLD  = 90.0
 
+# Handys für /whoishome — MAC Adressen
+PEOPLE = {
+    "Ayman":  "92:20:41:34:8f:5a",
+    "Mama":   "72:7e:11:b3:20:b2",
+    "Wael":   "86:cc:13:d1:df:c7"
+}
+
 os.makedirs(IMAGES_DIR, exist_ok=True)
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 logging.basicConfig(level=logging.INFO)
@@ -28,12 +35,14 @@ logging.basicConfig(level=logging.INFO)
 def load_devices():
     if os.path.exists(DEVICES_FILE):
         with open(DEVICES_FILE) as f:
-            return json.load(f)
+            data = json.load(f)
+        return {k.lower(): v for k, v in data.items()}
     return {}
 
 def save_devices(data):
+    clean = {k.lower(): v for k, v in data.items()}
     with open(DEVICES_FILE, "w") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(clean, f, ensure_ascii=False, indent=2)
 
 def load_notes():
     with open(NOTES_FILE) as f:
@@ -70,6 +79,26 @@ def fetch_api(path):
     except:
         return None
 
+def format_last_seen(last_seen_str):
+    if not last_seen_str:
+        return "unbekannt"
+    try:
+        last = datetime.strptime(last_seen_str, "%d.%m.%Y %H:%M")
+        diff = datetime.now() - last
+        mins = int(diff.total_seconds() / 60)
+        if mins < 2:
+            return "gerade eben"
+        elif mins < 60:
+            return f"vor {mins} Min"
+        elif mins < 1440:
+            hours = mins // 60
+            return f"vor {hours} Std"
+        else:
+            days = mins // 1440
+            return f"vor {days} Tagen"
+    except:
+        return last_seen_str
+
 async def check_user(update: Update) -> bool:
     if update.effective_user.id != ALLOWED_USER_ID:
         await update.message.reply_text("Nicht autorisiert!")
@@ -87,6 +116,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Netzwerk:\n"
         "/status — Pi Status\n"
         "/devices — Geräte im Netz\n"
+        "/whoishome — wer ist zuhause?\n"
         "/name <mac> <name> — Gerät benennen\n"
         "  Beispiel: /name aa:bb:cc:dd:ee:ff Mamas Handy"
     )
@@ -136,7 +166,7 @@ async def devices_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     msg = f"📱 Geräte im Netzwerk ({len(devices)} aktiv)\n━━━━━━━━━━━━━━━━\n"
     for dev in devices:
-        mac = dev.get("mac", "")
+        mac = dev.get("mac", "").lower()
         ip = dev.get("ip", "")
         hostname = dev.get("hostname", "")
         if mac in known and known[mac].get("name"):
@@ -145,8 +175,36 @@ async def devices_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             name = hostname
         else:
             name = mac
-        msg += f"✅ {name}\n     {ip} · {mac}\n"
+        last_seen = known.get(mac, {}).get("last_seen", "")
+        last_seen_str = format_last_seen(last_seen)
+        msg += f"✅ {name}\n     {ip} · {last_seen_str}\n"
     msg += "\nTipp: /name <mac> <name> zum Benennen"
+    await update.message.reply_text(msg)
+
+async def whoishome_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not await check_user(update): return
+    known = load_devices()
+    msg = "🏠 Wer ist zuhause?\n━━━━━━━━━━━━━━━━\n"
+    for person, mac in PEOPLE.items():
+        mac = mac.lower()
+        entry = known.get(mac, {})
+        last_seen = entry.get("last_seen", "")
+        if last_seen:
+            try:
+                last = datetime.strptime(last_seen, "%d.%m.%Y %H:%M")
+                diff = datetime.now() - last
+                mins = int(diff.total_seconds() / 60)
+                if mins <= 10:
+                    status = "✅ zuhause"
+                elif mins <= 60:
+                    status = f"⚠️ vor {mins} Min gesehen"
+                else:
+                    status = f"❌ nicht zuhause (vor {mins//60} Std)"
+            except:
+                status = "❓ unbekannt"
+        else:
+            status = "❓ noch nie gesehen"
+        msg += f"{person}: {status}\n"
     await update.message.reply_text(msg)
 
 async def name_device(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -160,7 +218,13 @@ async def name_device(update: Update, context: ContextTypes.DEFAULT_TYPE):
     mac = context.args[0].lower()
     name = " ".join(context.args[1:])
     known = load_devices()
-    known[mac] = {"name": name, "added": datetime.now().strftime("%d.%m.%Y %H:%M")}
+    known[mac] = {
+        "name": name,
+        "added": datetime.now().strftime("%d.%m.%Y %H:%M"),
+        "hostname": known.get(mac, {}).get("hostname", ""),
+        "last_seen": known.get(mac, {}).get("last_seen", ""),
+        "last_ip": known.get(mac, {}).get("last_ip", "")
+    }
     save_devices(known)
     await update.message.reply_text(f"✅ Gerät gespeichert!\n{mac} → {name}")
 
@@ -184,7 +248,7 @@ async def check_alerts(context: ContextTypes.DEFAULT_TYPE):
     if n and "devices" in n:
         known = load_devices()
         for dev in n["devices"]:
-            mac = dev.get("mac", "")
+            mac = dev.get("mac", "").lower()
             ip = dev.get("ip", "")
             hostname = dev.get("hostname", "")
             if not mac:
@@ -205,7 +269,8 @@ async def check_alerts(context: ContextTypes.DEFAULT_TYPE):
                     "name": "",
                     "hostname": hostname,
                     "first_seen": datetime.now().strftime("%d.%m.%Y %H:%M"),
-                    "last_ip": ip
+                    "last_ip": ip,
+                    "last_seen": datetime.now().strftime("%d.%m.%Y %H:%M")
                 }
             else:
                 known[mac]["last_ip"] = ip
@@ -332,6 +397,7 @@ app.add_handler(CommandHandler("delete", delete_note))
 app.add_handler(CommandHandler("deleteall", delete_all))
 app.add_handler(CommandHandler("status", status_command))
 app.add_handler(CommandHandler("devices", devices_command))
+app.add_handler(CommandHandler("whoishome", whoishome_command))
 app.add_handler(CommandHandler("name", name_device))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(MessageHandler(filters.PHOTO, handle_photo))

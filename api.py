@@ -8,62 +8,112 @@ import urllib.request
 import socket
 from datetime import datetime
 import re
+import requests
+import xml.etree.ElementTree as ET
+from dotenv import load_dotenv
+
+load_dotenv("/home/raspberrypi/Desktop/pi-dashboard/.env")
 
 STROMPREIS = 0.30
 IDLE_WATT = 3.0
 MAX_WATT = 8.0
 LOG_FILE = "/home/raspberrypi/Desktop/pi-dashboard/energy_log.json"
 
-# ─── NMAP CACHE ───────────────────────────────────────────────────────────────
+FRITZ_URL  = os.getenv("FRITZ_URL", "http://192.168.178.1:49000")
+FRITZ_USER = os.getenv("FRITZ_USER")
+FRITZ_PASS = os.getenv("FRITZ_PASS")
+
 network_cache = {"devices": [], "device_count": 0, "services": {}}
 network_cache_lock = threading.Lock()
+
+def fritz_call(action, body):
+    url = f"{FRITZ_URL}/upnp/control/hosts"
+    headers = {
+        "Content-Type": 'text/xml; charset="utf-8"',
+        "SOAPACTION": action
+    }
+    try:
+        r = requests.post(url, data=body, headers=headers,
+                          auth=(FRITZ_USER, FRITZ_PASS), timeout=5)
+        r.raise_for_status()
+        return r.text
+    except Exception as e:
+        print("fritz_call error:", e)
+        return None
+
+def get_services():
+    services = {}
+    for svc in ["nginx", "pi-api", "pi-helpdesk", "pi-auth", "pihole-FTL"]:
+        try:
+            out = subprocess.check_output(
+                ["systemctl", "is-active", svc],
+                stderr=subprocess.DEVNULL
+            ).decode().strip()
+            services[svc] = out == "active"
+        except:
+            services[svc] = False
+    return services
 
 def update_network_cache():
     while True:
         try:
-            nmap_out = subprocess.check_output(
-                ["sudo", "nmap", "-sn", "192.168.178.0/24", "--oG", "-"],
-                stderr=subprocess.DEVNULL
-            ).decode()
-            arp_out = subprocess.check_output(["arp", "-a"], stderr=subprocess.DEVNULL).decode()
-            mac_table = {}
-            for line in arp_out.split("\n"):
-                ip_match = re.search(r"\(([\d\.]+)\)", line)
-                mac_match = re.search(r"([0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})", line)
-                if ip_match and mac_match:
-                    mac_table[ip_match.group(1)] = mac_match.group(1)
+            xml_count = fritz_call(
+                "urn:dslforum-org:service:Hosts:1#GetHostNumberOfEntries",
+                """<?xml version="1.0"?>
+                <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+                  <s:Body>
+                    <u:GetHostNumberOfEntries xmlns:u="urn:dslforum-org:service:Hosts:1"/>
+                  </s:Body>
+                </s:Envelope>"""
+            )
+            if not xml_count:
+                time.sleep(120)
+                continue
+
+            root = ET.fromstring(xml_count)
+            node = root.find(".//NewHostNumberOfEntries")
+            count = int(node.text) if node is not None and node.text else 0
+
             devices = []
-            for line in nmap_out.split("\n"):
-                if "Host:" not in line or "Status: Up" not in line:
+            for i in range(count):
+                xml = fritz_call(
+                    "urn:dslforum-org:service:Hosts:1#GetGenericHostEntry",
+                    f"""<?xml version="1.0"?>
+                    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+                      <s:Body>
+                        <u:GetGenericHostEntry xmlns:u="urn:dslforum-org:service:Hosts:1">
+                          <NewIndex>{i}</NewIndex>
+                        </u:GetGenericHostEntry>
+                      </s:Body>
+                    </s:Envelope>"""
+                )
+                if not xml:
                     continue
-                ip_match = re.search(r"Host:\s+([\d\.]+)", line)
-                hostname_match = re.search(r"\((.*?)\)", line)
-                if ip_match:
-                    ip = ip_match.group(1)
-                    if ip == "192.168.178.90":
-                        continue
-                    hostname = hostname_match.group(1) if hostname_match else ""
-                    mac = mac_table.get(ip, "")
-                    devices.append({"ip": ip, "mac": mac, "hostname": hostname})
-            services = {}
-            for svc in ["nginx", "pi-api", "pi-helpdesk", "pi-auth", "pihole-FTL"]:
-                try:
-                    out = subprocess.check_output(["systemctl", "is-active", svc], stderr=subprocess.DEVNULL).decode().strip()
-                    services[svc] = out == "active"
-                except:
-                    services[svc] = False
+                r = ET.fromstring(xml)
+                active = r.findtext(".//NewActive")
+                if active not in ("1", "true"):
+                    continue
+                devices.append({
+                    "ip":       r.findtext(".//NewIPAddress") or "",
+                    "mac":      (r.findtext(".//NewMACAddress") or "").lower(),
+                    "hostname": r.findtext(".//NewHostName") or ""
+                })
+
+            services = get_services()
+
             with network_cache_lock:
-                network_cache["devices"] = devices
+                network_cache["devices"]      = devices
                 network_cache["device_count"] = len(devices)
-                network_cache["services"] = services
-        except:
-            pass
-        time.sleep(120)  # alle 2 Minuten
+                network_cache["services"]     = services
+
+        except Exception as e:
+            print("network error:", e)
+
+        time.sleep(120)
 
 network_thread = threading.Thread(target=update_network_cache, daemon=True)
 network_thread.start()
 
-# ─── POWER ────────────────────────────────────────────────────────────────────
 def get_power():
     try:
         load = float(subprocess.check_output(["cat", "/proc/loadavg"]).decode().split()[0])
@@ -111,7 +161,6 @@ def energy_tracker():
 tracker = threading.Thread(target=energy_tracker, daemon=True)
 tracker.start()
 
-# ─── HTTP HANDLER ─────────────────────────────────────────────────────────────
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
@@ -191,7 +240,11 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/api/network":
             try:
                 with network_cache_lock:
-                    data = dict(network_cache)
+                    data = {
+                        "devices":      list(network_cache["devices"]),
+                        "device_count": network_cache["device_count"],
+                        "services":     dict(network_cache["services"])
+                    }
                 self.send_response(200)
                 self.send_header("Content-type", "application/json")
                 self.send_header("Access-Control-Allow-Origin", "*")
