@@ -3,12 +3,15 @@ import json
 import jwt
 import datetime
 import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "LcyJcNSTfX(46a=6Ad@Y0.!U!O<i0L@t"
+load_dotenv("/home/raspberrypi/Desktop/pi-dashboard/.env")
+
+SECRET_KEY = os.getenv("JWT_SECRET", "fallback-secret-change-me")
 
 USERS = {
-    "admin": "admin2026",
-    "demo": "demo2026"
+    os.getenv("ADMIN_USER"): os.getenv("ADMIN_PASS"),
+    os.getenv("DEMO_USER"):   os.getenv("DEMO_PASS")
 }
 
 def create_token(username):
